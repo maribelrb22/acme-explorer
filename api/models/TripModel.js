@@ -1,11 +1,15 @@
 'use strict';
 import mongoose from 'mongoose';
 import {schema as StagesSchema} from './StagesModel.js';
+import { customAlphabet } from 'nanoid';
+import dateFormat from 'dateformat';
+
+const sequenceTickerGenerator = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4);
 
 const TripSchema = new mongoose.Schema({
     ticker: {
         type: String,
-        required: 'Enter the ticker of the trip'
+        unique: true
     },
     title: {
         type: String,
@@ -14,11 +18,6 @@ const TripSchema = new mongoose.Schema({
     description: {
         type: String,
         required: 'Enter the description of the trip'
-    },
-    price: {
-        type: Number,
-        required: 'Enter the price of the trip',
-        min: 0
     },
     startDate: {
         type: Date,
@@ -43,7 +42,23 @@ const TripSchema = new mongoose.Schema({
         ref: 'Actor',
         required: 'Enter the manager of the trip'
     },
+    published: {
+        type: Boolean,
+        required: 'Enter the published status of the trip'
+    },
 }, {strict: false});
+
+TripSchema.virtual('price').get(function () {
+    return this.stages.reduce((acc, stage) => acc + stage.price, 0);
+});
+
+TripSchema.pre('save', function (callback) {
+    const newTrip = this;
+    const day = dateFormat(new Date(), "yymmdd");
+    const sequenceTicker = sequenceTickerGenerator();
+    newTrip.ticker = day + '-' + sequenceTicker;
+    callback();
+});
 
 const model = mongoose.model('Trip', TripSchema);
 
