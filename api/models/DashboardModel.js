@@ -28,7 +28,7 @@ const DashboardSchema = new mongoose.Schema({
     }
 }, {strict: false});
 
-const model = mongoose.model('Dashboard', TripSchema);
+const model = mongoose.model('Dashboard', DashboardSchema);
 
 export const schema = model.schema;
 export default model;
