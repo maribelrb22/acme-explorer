@@ -1,6 +1,6 @@
 'use strict'
 
-const BookingModel = require('../models/BookingModel.js')
+import BookingModel from '../models/BookingModel.js';
 
 const getBooking = async (req, res) => {
     try {
@@ -27,7 +27,7 @@ const patchBooking = async (req, res) => {
         const booking = await BookingModel.findById(req.params.id)
         if (booking) {
             await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "ACCEPTED"}})
-            res.status(200).json({message: "Booking updated"})
+            res.status(200).json({message: "Status updated"})
         } else {
             res.status(404).json({message: "Booking not found"})
         }
