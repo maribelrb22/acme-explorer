@@ -4,7 +4,8 @@ import mongoose from 'mongoose'
 const BookingSchema = new mongoose.Schema({
     moment: {
         type: Date,
-        required: 'Enter the moment of the booking'
+        required: 'Enter the moment of the booking',
+        default: Date.now
     },
     status: {
         type: String,
