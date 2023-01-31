@@ -21,11 +21,12 @@ const postBooking = async (req, res) => {
     }
 }
 
+
 const patchBooking = async (req, res) => {
     try{
         const booking = await BookingModel.findById(req.params.id)
         if (booking) {
-            await BookingModel.updateOne({_id: req.params.id}, {$set: req.body})
+            await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "ACCEPTED"}})
             res.status(200).json({message: "Booking updated"})
         } else {
             res.status(404).json({message: "Booking not found"})
@@ -35,6 +36,7 @@ const patchBooking = async (req, res) => {
         res.status(500).json(err)
     }
 }
+
 
 export {getBooking, postBooking, patchBooking};
 
