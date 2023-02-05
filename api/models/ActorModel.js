@@ -1,5 +1,6 @@
 'use strict';
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt'
 
 const ActorSchema = new mongoose.Schema({
     name: {
@@ -12,7 +13,9 @@ const ActorSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: 'Enter the email of the actor'
+        required: 'Kindly enter the actor email',
+        unique: true,
+        match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
     },
     phone: {
         type: String,
@@ -24,8 +27,49 @@ const ActorSchema = new mongoose.Schema({
         type: String,
         enum: ['ADMINISTRATOR', 'MANAGER', 'EXPLORER'],
         required: 'Enter the role of the actor'
-    }]
-}, {strict: false});    
+    }],
+    password: {
+        type: String,
+        validate: {
+            validator: function (v) {
+                return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,}$/.test(v);
+            },
+            message: props => `Is not a valid password!, it must be at least 5 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character`
+        },
+        required: 'Kindly enter the actor password'
+    }
+}, { strict: false });
+
+ActorSchema.pre('save', function (callback) {
+    const actor = this
+    bcrypt.genSalt(5, function (err, salt) {
+        if (err) return callback(err)
+
+        bcrypt.hash(actor.password, salt, function (err, hash) {
+            if (err) return callback(err)
+            actor.password = hash
+            callback()
+        })
+    })
+})
+
+ActorSchema.pre('findOneAndUpdate', function (callback) {
+    const actor = this._update
+    if (actor.password) {
+        bcrypt.genSalt(5, function (err, salt) {
+            if (err) return callback(err)
+
+            bcrypt.hash(actor.password, salt, function (err, hash) {
+                if (err) return callback(err)
+                actor.password = hash
+                callback()
+            })
+        })
+    }
+    else {
+        callback()
+    }
+})
 
 const model = mongoose.model('Actor', ActorSchema);
 
