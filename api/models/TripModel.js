@@ -27,11 +27,17 @@ const TripSchema = new mongoose.Schema({
         type: Date,
         required: 'Enter the end date of the trip'
     },
+    cancel: {
+        type: Boolean,
+        default: false
+    },
     cancelReason: {
         type: String,
     },
     requirements: [{
         type: String,
+        trim: true,
+        required: 'Enter the requirements of the trip'
     }],
     pictures: [{
         type: String,
@@ -44,8 +50,14 @@ const TripSchema = new mongoose.Schema({
     },
     published: {
         type: Boolean,
+        default: false,
         required: 'Enter the published status of the trip'
     },
+    bookings: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Booking'
+    }],
+    
 }, {strict: false});
 
 TripSchema.virtual('price').get(function () {
@@ -57,7 +69,18 @@ TripSchema.pre('save', function (callback) {
     const day = dateFormat(new Date(), "yymmdd");
     const sequenceTicker = sequenceTickerGenerator();
     newTrip.ticker = day + '-' + sequenceTicker;
+
+    if (!newTrip.stages.length) {
+        const err = new Error('The stages are required');
+        err.name = 'StagesError';
+        return callback(err);
+    }
+
     callback();
+});
+
+TripSchema.set('toJSON', {
+    virtuals: true
 });
 
 const model = mongoose.model('Trip', TripSchema);

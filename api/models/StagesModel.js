@@ -1,7 +1,7 @@
-'use  strict'
-import  mongoose  from  'mongoose'
+'use strict'
+import mongoose from 'mongoose'
 
-const StagesSchema  =  new  mongoose.Schema({
+const StagesSchema = new mongoose.Schema({
     title: {
         type: String,
         required: 'Enter the title of the stage'
