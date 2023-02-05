@@ -55,7 +55,7 @@ ActorSchema.pre('save', function (callback) {
 
 ActorSchema.pre('findOneAndUpdate', function (callback) {
     const actor = this._update
-    if (actor.password) {
+    if (actor?.password) {
         bcrypt.genSalt(5, function (err, salt) {
             if (err) return callback(err)
 

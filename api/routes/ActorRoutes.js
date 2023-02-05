@@ -1,6 +1,6 @@
 'use strict'
 import { createActor, updateActor } from "../controllers/ActorController.js"
-import { creationValidator } from '../controllers/validators/ActorValidator.js'
+import { creationValidator, putValidator } from '../controllers/validators/ActorValidator.js'
 import handleExpressValidation from '../middlewares/ValidationHandlingMiddleware.js'
 import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'
 
@@ -13,5 +13,9 @@ export default function (app) {
             sendErrors)
 
     app.route('/v0/actors/:actorId')
-        .put(updateActor, sendErrors)
+        .put(
+            putValidator,
+            handleExpressValidation,
+            updateActor,
+            sendErrors)
 }
