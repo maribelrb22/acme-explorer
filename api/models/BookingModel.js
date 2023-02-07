@@ -10,7 +10,8 @@ const BookingSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['PENDING', 'REJECTED', 'DUE', 'ACCEPTED', 'CANCELLED'],
-        required: 'Enter the status of the booking'
+        required: 'Enter the status of the booking',
+        default: 'PENDING'
     },
     comment: {
         type: String,
@@ -26,6 +27,8 @@ const BookingSchema = new mongoose.Schema({
         required: 'Enter the explorer of the booking'
     },
 }, {strict: false});
+
+
 
 const model = mongoose.model('Booking', BookingSchema);
 
