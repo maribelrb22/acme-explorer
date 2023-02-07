@@ -1,25 +1,33 @@
 'use strict'
-import { cancelTripValidator, createTripValidator, updateTripValidator } from "../controllers/validators/TripValidator.js"
+import express from 'express'
+
 import publishValidator from "../middlewares/PublishValidator.js"
 import handleExpressValidation from "../middlewares/ValidationHandlingMiddleware.js"
 import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'
+import { cancelTripValidator, createTripValidator, updateTripValidator } from "../controllers/validators/TripValidator.js"
 import { listTrips, searchTrips, createTrip, publishTrip, updateTrip, cancelTrip, deleteTrip} from "../controllers/TripController.js"
 
-export default function (app) {
-    app.route('/v0/trips')
-        .get(listTrips, sendErrors)
-        .post(createTripValidator, handleExpressValidation, createTrip, sendErrors)
 
-    app.route('/v0/trips/:tripId')
-        .put(updateTripValidator, handleExpressValidation, publishValidator, updateTrip, sendErrors)
-        .delete(publishValidator, deleteTrip, sendErrors)
+const v1 = express.Router();
 
-    app.route('/v0/trips/search')
-        .get(searchTrips, sendErrors)
+v1.route('/')
+    .get(listTrips, sendErrors)
+    .post(createTripValidator, handleExpressValidation, createTrip, sendErrors)
 
-    app.route('/v0/trips/:tripId/cancel')
-        .patch(cancelTripValidator, handleExpressValidation, cancelTrip, sendErrors)
+v1.route('/:tripId')
+    .put(updateTripValidator, handleExpressValidation, publishValidator, updateTrip, sendErrors)
+    .delete(publishValidator, deleteTrip, sendErrors)
 
-    app.route('/v0/trips/:tripId/publish')
-        .patch(publishTrip, sendErrors)
-}
+v1.route('/search')
+    .get(searchTrips, sendErrors)
+
+v1.route('/:tripId/cancel')
+    .patch(cancelTripValidator, handleExpressValidation, cancelTrip, sendErrors)
+
+v1.route('/:tripId/publish')
+    .patch(publishTrip, sendErrors)
+
+const v2 = express.Router();
+
+export const tripsV1 = v1;
+export const tripsV2 = v2;
