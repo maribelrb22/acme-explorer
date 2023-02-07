@@ -17,13 +17,10 @@ const DashboardSchema = new mongoose.Schema({
         required: 'Enter trip price stats'
     },
     statusRatios: {
-        type: {
-            PENDING:    { type: String, required: 'Enter PENDING applications ratio' },
-            REJECTED:   { type: String, required: 'Enter REJECTED applications ratio' },
-            DUE:        { type: String, required: 'Enter DUE applications ratio' },
-            ACCEPTED:   { type: String, required: 'Enter ACCEPTED applications ratio'},
-            CANCELLED:  { type: String, required: 'Enter CANCELLED applications ratio' }
-        },
+        type: [{
+            status: String,
+            ratio: Number
+        }],
         required: 'Enter application status ratios'
     }
 }, {strict: false});
