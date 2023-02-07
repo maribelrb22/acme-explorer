@@ -21,7 +21,7 @@ const StatsSchema = new mongoose.Schema({
     }
 }, {strict: false});
 
-const model = mongoose.model('Stats', TripSchema);
+const model = mongoose.model('Stats', StatsSchema);
 
 export const schema = model.schema;
 export default model;
