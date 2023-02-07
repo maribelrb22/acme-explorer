@@ -9,15 +9,4 @@ const creationBookingValidator = [
   
 ]
 
-
-const updateBookingValidator = [
-    //check('id').isMongoId().withMessage('The id must be a valid mongo id'),
-    check('moment').exists({ checkNull: true, checkFalsy: true }).isString().withMessage('The date must be in this format 2019-04-11T00:00:00.000+00:00').trim().notEmpty().withMessage('The date is required').escape(),
-    check('status').exists({ checkNull: true, checkFalsy: true }).isString().withMessage('The status must be a string').trim().notEmpty().withMessage('The status is required').isIn(['PENDING', 'REJECTED', 'DUE', 'ACCEPTED', 'CANCELLED']).escape(),
-    check('coment').optional().isString().withMessage('The coment must be a string'),
-    check('trip').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The trip must be a valid mongo id').trim().notEmpty().withMessage('The trip is required').escape(),
-    check('explorer').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The explorer must be a valid mongo id').trim().notEmpty().withMessage('The explorer is required').escape(),
-    
-  ]
-
-export { creationBookingValidator, updateBookingValidator }
+export { creationBookingValidator }

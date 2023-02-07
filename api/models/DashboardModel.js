@@ -1,7 +1,7 @@
 'use strict'
 
 import mongoose from 'mongoose'
-
+import { schema as StatsSchema } from './StatsModel.js'
 
 const DashboardSchema = new mongoose.Schema({
     tripsPerManagerStats: {

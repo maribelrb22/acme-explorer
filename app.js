@@ -5,6 +5,7 @@ import initMongoDBConnection from './api/config/mongoose.js'
 import ActorRoutes from './api/routes/ActorRoutes.js'
 import BookingRoutes from './api/routes/BookingRoutes.js'
 import TripRoutes from './api/routes/TripRoutes.js'
+import DashboardRoutes from './api/routes/DashboardRoutes.js'
 dotenv.config()
 
 const app = express()
@@ -15,6 +16,7 @@ app.use(bodyParser.json())
 ActorRoutes(app)
 BookingRoutes(app)
 TripRoutes(app)
+DashboardRoutes(app)
 
 try{
   await initMongoDBConnection()

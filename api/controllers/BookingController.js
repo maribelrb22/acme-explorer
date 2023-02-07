@@ -2,27 +2,28 @@
 
 import BookingModel from '../models/BookingModel.js';
 
-const getBooking = async (req, res) => {
+const getBooking = async (req, res, next) => {
     try {
         const booking = await BookingModel.find({})
         res.status(200).json(booking)
     } catch (err) {
-        res.status(500).json(err)
+        req.err = err;
+        next()
     }
 }
 
-const postBooking = async (req, res) => {
+const postBooking = async (req, res, next) => {
     try {
         const booking = new BookingModel(req.body)
         await booking.save()
         res.status(201).json(booking)
     } catch (err) {
-        res.status(500).json(err)
+        req.err = err;
+        next()
     }
 }
 
-
-const patchBooking = async (req, res) => {
+const acceptBooking = async (req, res, next) => {
     try{
         const booking = await BookingModel.findById(req.params.id)
         if (booking) {
@@ -33,12 +34,12 @@ const patchBooking = async (req, res) => {
         }
     }
     catch (err) {
-        res.status(500).json(err)
+        req.err = err;
+        next()
     }
 }
 
-
-export {getBooking, postBooking, patchBooking};
+export {getBooking, postBooking, acceptBooking};
 
 
 

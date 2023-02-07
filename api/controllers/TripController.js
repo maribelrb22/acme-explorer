@@ -45,7 +45,11 @@ const createTrip = async (req, res, next) => {
 const publishTrip = async (req, res, next) => {
     try {
         const trip = await TripModel.findOneAndUpdate({_id: req.params.tripId}, { published: true }, { new: true });
-        res.status(200).json(trip);
+        if (trip) {
+            res.status(200).json(trip);
+        } else {
+            res.status(404).send('Trip not found')
+        }
     } catch (err) {
         // check if the role is MANAGER
         req.err = err;
@@ -88,7 +92,7 @@ const cancelTrip = async (req, res, next) => {
 const deleteTrip = async (req, res, next) => {
     try {
         const trip = await TripModel.deleteOne({_id: req.params.tripId}, req.body);
-        res.status(200).json(trip);
+        res.status(204).json(trip);
     } catch (err) {
         // check if the role is MANAGER
         req.err = err;

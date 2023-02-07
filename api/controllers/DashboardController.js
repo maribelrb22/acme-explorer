@@ -11,4 +11,4 @@ const getDashboard = async (req, res) => {
     }
 }
 
-export {getDashboard};
+export { getDashboard };
