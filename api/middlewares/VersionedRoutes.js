@@ -9,7 +9,7 @@ function versionedRoutes(versions) {
         } 
         
         req.url = `/${apiVersion}${req.url}`;
-        return next();
+        next();
     }
 }
   

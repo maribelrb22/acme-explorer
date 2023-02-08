@@ -1,0 +1,372 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "ACME EXPLORER API"
+  },
+  "host": "localhost:8080",
+  "basePath": "/",
+  "paths": {    
+    "/actors": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "post": {
+        "summary": "Register an actor",
+        "description": "This method is used to create an actor, it returns the created actor.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Actor"
+        ],
+        "parameters": [
+          {
+            "name": "actor",
+            "in": "body",
+            "description": "Actor to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegisterActor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/RegisterActor"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/actors/{actorId}": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "put": {
+        "summary": "Update an actor",
+        "description": "This method is used to update an actor, it returns the updated actor.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Actor"
+        ],
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "description": "Actor id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "actor",
+            "in": "body",
+            "description": "Actor to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateActor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/UpdateActor"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/trips": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "get": {
+        "summary": "Get all trips",
+        "description": "This method is used to get all trips.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Trip"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Trip"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+
+  },
+  "definitions": {
+    "RegisterActor": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the actor",
+          "required": true,
+          "example": "John Doe"
+        },
+        "surname": {
+          "type": "string",
+          "description": "The surname of the actor",
+          "required": true,
+          "example": "Doe"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The email of the actor",
+          "required": true,
+          "example": "jhon@mail.com"
+        },
+        "password": {
+          "type": "string",
+          "description": "The password of the actor, it must be at least 5 characters long, and it must be at least 5 characters long and must contain at least one uppercase letter, one lowercase letter, one number and one special character",
+          "required": true,
+          "example": "Password123%"
+        },
+        "role": {
+          "type": "string",
+          "description": "The role of the actor, it must be ADMINISTRATOR, MANAGER or EXPLORER",
+          "required": true,
+          "example": "EXPLORER"
+        },
+        "phone": {
+          "type": "string",
+          "description": "The phone of the actor",
+          "example": "123456789"
+        },
+        "address": {
+          "type": "string",
+          "description": "The address of the actor",
+          "example": "Calle sa 123"
+        }
+      }
+    },
+    "UpdateActor": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the actor",
+          "example": "John Doe"
+        },
+        "surname": {
+          "type": "string",
+          "description": "The surname of the actor",
+          "example": "Doe"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The email of the actor",
+          "example": "jhon@mail.com"
+        },
+        "password": {
+          "type": "string",
+          "description": "The password of the actor, it must be at least 5 characters long, and it must be at least 5 characters long and must contain at least one uppercase letter, one lowercase letter, one number and one special character",
+          "example": "Password123%"
+        },
+        "role": {
+          "type": "string",
+          "description": "The role of the actor, it must be ADMINISTRATOR, MANAGER or EXPLORER",
+          "example": "EXPLORER"
+        },
+        "phone": {
+          "type": "string",
+          "description": "The phone of the actor",
+          "example": "123456789"
+        },
+        "address": {
+          "type": "string",
+          "description": "The address of the actor",
+          "example": "Calle sa 123"
+        }
+      }
+    },
+    "Trip": {
+      "type": "object",
+      "properties": {
+        "ticker": {
+          "type": "string",
+          "description": "The ticker of the trip",
+          "example": "221201-ABCD"
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the trip",
+          "example": "Trip to the moon"
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the trip",
+          "example": "Trip to the moon"
+        },
+        "price": {
+          "type": "number",
+          "description": "The price of the trip",
+          "example": "100"
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The requirements of the trip",
+          "example": [
+            "Swimming",
+            "Diving"
+          ]
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The start moment of the trip",
+          "example": "2020-12-12T12:12:12Z"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The end moment of the trip",
+          "example": "2020-12-12T12:12:12Z"
+        },
+        "cancel": {
+          "type": "boolean",
+          "description": "The cancel of the trip",
+          "example": "false"
+        },
+        "cancelReason": {
+          "type": "string",
+          "description": "The cancel reason of the trip",
+          "example": "The trip is cancelled because..."
+        },
+        "pictures" : {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The pictures of the trip",
+          "example": [
+            "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+            "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+          ]
+        },
+        "stages" : {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "The title of the stage",
+                "example": "Stage 1"
+              },
+              "description": {
+                "type": "string",
+                "description": "The description of the stage",
+                "example": "Stage 1 description"
+              },
+              "price": {
+                "type": "number",
+                "description": "The price of the stage",
+                "example": "100"
+              }
+            }
+          },
+          "description": "The stages of the trip",
+          "example": [
+            {
+              "title": "Stage 1",
+              "description": "Stage 1 description",
+              "price": "100"
+            },
+            {
+              "title": "Stage 2",
+              "description": "Stage 2 description",
+              "price": "200"
+            }
+          ]
+        },
+        "manager": {
+          "type": "string",
+          "description": "The manager of the trip",
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        },
+        "published": {
+          "type": "boolean",
+          "description": "The published of the trip",
+          "example": "false"
+        },
+        "bookings" : {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The bookings of the trip",
+          "example": [
+            "5f9f1c9b9b9b9b9b9b9b9b9b",
+            "5f9f1c9b9b9b9b9b9b9b9b9b"
+          ]
+        }
+      }
+    }
+  }
+}

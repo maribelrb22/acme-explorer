@@ -1,6 +1,6 @@
 'use strict';
 import mongoose from 'mongoose';
-import {schema as StagesSchema} from './StagesModel.js';
+import { schema as StagesSchema } from './StagesModel.js';
 import { customAlphabet } from 'nanoid';
 import dateFormat from 'dateformat';
 
@@ -43,7 +43,7 @@ const TripSchema = new mongoose.Schema({
         type: String,
     }],
     stages: [StagesSchema],
-    manager : {
+    manager: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Actor',
         required: 'Enter the manager of the trip'
@@ -57,8 +57,8 @@ const TripSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Booking'
     }],
-    
-}, {strict: false});
+
+}, { strict: false });
 
 TripSchema.virtual('price').get(function () {
     return this.stages.reduce((acc, stage) => acc + stage.price, 0);
@@ -80,7 +80,10 @@ TripSchema.pre('save', function (callback) {
 });
 
 TripSchema.set('toJSON', {
-    virtuals: true
+    virtuals: true,
+    transform: function (doc, ret, options) {
+        delete ret.id;
+    }
 });
 
 const model = mongoose.model('Trip', TripSchema);
