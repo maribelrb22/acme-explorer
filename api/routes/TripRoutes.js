@@ -1,7 +1,7 @@
 'use strict'
 import express from 'express'
 
-import publishValidator from "../middlewares/PublishValidator.js"
+import publishOrDeleteValidator from "../middlewares/PublishValidator.js"
 import handleExpressValidation from "../middlewares/ValidationHandlingMiddleware.js"
 import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'
 import { cancelTripValidator, createTripValidator, updateTripValidator } from "../controllers/validators/TripValidator.js"
@@ -15,8 +15,8 @@ v1.route('/')
     .post(createTripValidator, handleExpressValidation, createTrip, sendErrors)
 
 v1.route('/:tripId')
-    .put(updateTripValidator, handleExpressValidation, publishValidator, updateTrip, sendErrors)
-    .delete(publishValidator, deleteTrip, sendErrors)
+    .put(updateTripValidator, handleExpressValidation, publishOrDeleteValidator, updateTrip, sendErrors)
+    .delete(publishOrDeleteValidator, deleteTrip, sendErrors)
 
 v1.route('/search')
     .get(searchTrips, sendErrors)

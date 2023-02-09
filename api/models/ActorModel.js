@@ -25,7 +25,7 @@ const ActorSchema = new mongoose.Schema({
     },
     role: [{
         type: String,
-        enum: ['ADMINISTRATOR', 'MANAGER', 'EXPLORER'],
+        enum: ['ADMINISTRATOR', 'MANAGER', 'EXPLORER', 'SPONSOR'],
         required: 'Enter the role of the actor'
     }],
     password: {

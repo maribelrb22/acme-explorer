@@ -227,7 +227,7 @@
         },
         "role": {
           "type": "string",
-          "description": "The role of the actor, it must be ADMINISTRATOR, MANAGER or EXPLORER",
+          "description": "The role of the actor, it must be ADMINISTRATOR, MANAGER, EXPLORER or SPONSOR",
           "example": "EXPLORER"
         },
         "phone": {

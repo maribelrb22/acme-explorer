@@ -3,6 +3,8 @@ import { check } from 'express-validator';
 const _checkPrice = (value) => {
     if (value < 0) {
         throw new Error('The price must be greater than or equal to 0');
+    } else if (value.toString().split('.')[1]?.length > 2) {
+        throw new Error('The price must have at most 2 decimal places');
     }
     return true;
 };

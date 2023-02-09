@@ -1,7 +1,7 @@
 'use strict'
 import TripModel from '../models/TripModel.js';
 
-const publishValidator = async (req, res, next) => {
+const publishOrDeleteValidator = async (req, res, next) => {
     const trips = await TripModel.find({_id: req.params.tripId});
     if (!trips[0]?.published) {
         next()
@@ -10,4 +10,4 @@ const publishValidator = async (req, res, next) => {
     }
 }
 
-export default publishValidator
+export default publishOrDeleteValidator
