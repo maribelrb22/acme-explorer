@@ -52,12 +52,8 @@ const TripSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
         required: 'Enter the published status of the trip'
-    },
-    bookings: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Booking'
-    }],
-
+    }
+    
 }, { strict: false });
 
 TripSchema.virtual('price').get(function () {

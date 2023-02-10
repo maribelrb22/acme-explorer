@@ -4,7 +4,7 @@ import express from 'express'
 import publishOrDeleteValidator from "../middlewares/PublishValidator.js"
 import handleExpressValidation from "../middlewares/ValidationHandlingMiddleware.js"
 import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'
-import { cancelTripValidator, createTripValidator, updateTripValidator } from "../controllers/validators/TripValidator.js"
+import { cancelTripValidator, createTripValidator, updateTripValidator, objectIdValidator } from "../controllers/validators/TripValidator.js"
 import { listTrips, searchTrips, createTrip, publishTrip, updateTrip, cancelTrip, deleteTrip} from "../controllers/TripController.js"
 
 
@@ -12,20 +12,20 @@ const v1 = express.Router();
 
 v1.route('/')
     .get(listTrips, sendErrors)
-    .post(createTripValidator, handleExpressValidation, createTrip, sendErrors)
+    .post(createTripValidator, handleExpressValidation,  createTrip, sendErrors)
 
 v1.route('/:tripId')
-    .put(updateTripValidator, handleExpressValidation, publishOrDeleteValidator, updateTrip, sendErrors)
-    .delete(publishOrDeleteValidator, deleteTrip, sendErrors)
+    .put(updateTripValidator, objectIdValidator, handleExpressValidation, publishOrDeleteValidator, updateTrip, sendErrors)
+    .delete(objectIdValidator, handleExpressValidation, publishOrDeleteValidator, deleteTrip, sendErrors)
 
 v1.route('/search')
     .get(searchTrips, sendErrors)
 
 v1.route('/:tripId/cancel')
-    .patch(cancelTripValidator, handleExpressValidation, cancelTrip, sendErrors)
+    .patch(cancelTripValidator, objectIdValidator, handleExpressValidation, cancelTrip, sendErrors)
 
 v1.route('/:tripId/publish')
-    .patch(publishTrip, sendErrors)
+    .patch(objectIdValidator, handleExpressValidation, publishTrip, sendErrors)
 
 const v2 = express.Router();
 

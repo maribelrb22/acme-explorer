@@ -10,6 +10,7 @@ const creationValidator = [
 ];
 
 const putValidator = [
+    check('actorId').exists().isMongoId().trim().escape(),
     check('name').optional().isString().withMessage("The name must be a string").trim().notEmpty().withMessage("If you want to update the name, you must enter a value").escape(),
     check('surname').optional().isString().withMessage("The surname must be a string").trim().notEmpty().withMessage("If you want to update the surname, you must enter a value").escape(),
     check('email').optional().isString().withMessage("The email must be a string").isEmail().withMessage("The email must be a valid email").trim().notEmpty().withMessage("If you want to update the email, you must enter a value").escape(),

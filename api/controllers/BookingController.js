@@ -13,6 +13,8 @@ const getBooking = async (req, res, next) => {
 }
 
 const postBooking = async (req, res, next) => {
+    req.body.moment = undefined
+    req.body.status = undefined
     try {
         const booking = new BookingModel(req.body)
         await booking.save()
@@ -27,8 +29,8 @@ const acceptBooking = async (req, res, next) => {
     try{
         const booking = await BookingModel.findById(req.params.id)
         if (booking) {
-            await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "ACCEPTED"}})
-            res.status(200).json({message: "Status updated"})
+            const updatedBooking = await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "ACCEPTED"}})
+            res.status(200).json(updatedBooking)
         } else {
             res.status(404).json({message: "Booking not found"})
         }
