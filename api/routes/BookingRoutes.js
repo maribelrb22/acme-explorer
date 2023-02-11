@@ -18,19 +18,19 @@ v1.route('/')
 
 v1.route('/:id/accept')
     .patch(
-        acceptBooking('ACCEPTED'),
+        acceptBooking,
         sendErrors
     )
 
 v1.route('/:id/reject')
     .patch(
-        rejectBooking('REJECTED'),
+        rejectBooking,
         sendErrors
     )
 
 v1.route('/:id/cancel')
     .patch(
-        cancelBooking('CANCELLED'),
+        cancelBooking,
         sendErrors
     )
 
