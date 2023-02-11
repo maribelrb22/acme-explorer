@@ -17,10 +17,10 @@ const FinderSchema = new mongoose.Schema({
     },
     maxDate: {
         type: Date
-    }
+    },
     explorer: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Actor'
+        ref: 'Actor',
         required: 'Enter the explorer'
     }
 }, {strict: false});
