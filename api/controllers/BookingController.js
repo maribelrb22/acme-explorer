@@ -30,6 +30,12 @@ const changeBookingStatus = function(newStatus) {
         try{
             const booking = await BookingModel.findById(req.params.id)
             if (booking) {
+                // check booking current status is DUE
+                if (booking.status !== 'DUE') {
+                    res.status(400).json({message: "Booking status is not DUE"})
+                    return
+                }
+                
                 const updatedBooking = await BookingModel.updateOne({_id: req.params.id}, {$set: {status: newStatus}})
                 res.status(200).json(updatedBooking)
             } else {
