@@ -25,19 +25,21 @@ const postBooking = async (req, res, next) => {
     }
 }
 
-const acceptBooking = async (req, res, next) => {
-    try{
-        const booking = await BookingModel.findById(req.params.id)
-        if (booking) {
-            const updatedBooking = await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "ACCEPTED"}})
-            res.status(200).json(updatedBooking)
-        } else {
-            res.status(404).json({message: "Booking not found"})
+const changeBookingStatus = function(newStatus) {
+    return async (req, res, next) => {
+        try{
+            const booking = await BookingModel.findById(req.params.id)
+            if (booking) {
+                const updatedBooking = await BookingModel.updateOne({_id: req.params.id}, {$set: {status: newStatus}})
+                res.status(200).json(updatedBooking)
+            } else {
+                res.status(404).json({message: "Booking not found"})
+            }
         }
-    }
-    catch (err) {
-        req.err = err;
-        next()
+        catch (err) {
+            req.err = err;
+            next()
+        }
     }
 }
 

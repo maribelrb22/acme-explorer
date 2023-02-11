@@ -1,7 +1,7 @@
 'use strict'
 import express from 'express'
 
-import { getBooking, postBooking, acceptBooking } from "../controllers/BookingController.js"
+import { getBooking, postBooking, acceptBooking, denyBooking } from "../controllers/BookingController.js"
 import { creationBookingValidator } from '../controllers/validators/BookingValidator.js'
 import handleExpressValidation from '../middlewares/ValidationHandlingMiddleware.js'
 import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'
@@ -16,9 +16,15 @@ v1.route('/')
         postBooking,
         sendErrors)
 
-v1.route('/:id')
+v1.route('/:id/accept')
     .patch(
-        acceptBooking,
+        changeBookingStatus('ACCEPTED'),
+        sendErrors
+    )
+
+v1.route('/:id/reject')
+    .patch(
+        changeBookingStatus('REJECTED'),
         sendErrors
     )
 
