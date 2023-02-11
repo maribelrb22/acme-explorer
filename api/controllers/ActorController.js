@@ -28,4 +28,37 @@ const updateActor = async (req, res, next) => {
     }
 }
 
-export { createActor, updateActor };
+// function to ban an actor
+const banActor = async (req, res, next) => {
+    try {
+        const actor = await ActorModel.findOneAndUpdate({ _id: req.params.actorId }, { banned: true }, { new: true })
+        if (actor) {
+            res.status(200).json(actor);
+        }
+        else {
+            res.status(404).json({ message: "Actor not found" });
+        }
+    } catch (err) {
+        req.err = err;
+        next()
+    }
+}
+
+// function to unban an actor
+const unbanActor = async (req, res, next) => {
+    try {
+        const actor = await ActorModel.findOneAndUpdate({ _id: req.params.actorId }, { banned: false }, { new: true })
+        if (actor) {
+            res.status(200).json(actor);
+        }
+        else {
+            res.status(404).json({ message: "Actor not found" });
+        }
+    } catch (err) {
+        req.err = err;
+        next()
+    }
+}
+
+
+export { createActor, updateActor, banActor, unbanActor };
