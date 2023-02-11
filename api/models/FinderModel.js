@@ -3,6 +3,11 @@
 import mongoose from 'mongoose'
 
 const FinderSchema = new mongoose.Schema({
+    explorer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Actor',
+        required: 'Enter the explorer of the finder'
+    },
     keyword: {
         type: String
     },
@@ -17,11 +22,6 @@ const FinderSchema = new mongoose.Schema({
     },
     maxDate: {
         type: Date
-    }
-    explorer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Actor'
-        required: 'Enter the explorer'
     }
 }, {strict: false});
 
