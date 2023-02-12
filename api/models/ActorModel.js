@@ -23,11 +23,11 @@ const ActorSchema = new mongoose.Schema({
     address: {
         type: String,
     },
-    role: [{
+    role: {
         type: String,
         enum: ['ADMINISTRATOR', 'MANAGER', 'EXPLORER', 'SPONSOR'],
         required: 'Enter the role of the actor'
-    }],
+    },
     
     banned: {
         type: Boolean,
