@@ -71,7 +71,6 @@ const cancelBooking = async (req, res, next) => {
     try{
         const booking = await BookingModel.findById(req.params.id)
         if (booking) {
-            // check statis is equal to PENDING or ACCEPTED
             if (booking.status !== 'PENDING' && booking.status !== 'ACCEPTED') {
                 res.status(400).json({message: "Cannot cancel a booking that is not PENDING or ACCEPTED"})
                 return
