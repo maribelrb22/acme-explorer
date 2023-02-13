@@ -1,17 +1,16 @@
 'use strict'
 import express from 'express'
 
-import { getBooking, postBooking, acceptBooking, rejectBooking, cancelBooking } from "../controllers/BookingController.js"
+import { getBooking, postBooking, acceptBooking } from "../controllers/BookingController.js"
 import { creationBookingValidator } from '../controllers/validators/BookingValidator.js'
 import handleExpressValidation from '../middlewares/ValidationHandlingMiddleware.js'
 import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'
 
-
 const v1 = express.Router();
 
 v1.route('/')
-    .get(getBooking,sendErrors)
-    .post(creationBookingValidator,
+    .get(getBooking,sendErrors) // if user is manager. Return the bookings of his trips
+    .post(creationBookingValidator, // if user is a explorer
         handleExpressValidation,
         postBooking,
         sendErrors)

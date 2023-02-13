@@ -11,22 +11,6 @@ const getFlatRateConfiguration = async (req, res, next) => {
     }
 }
 
-const createFlatRateConfiguration = async (req, res, next) => {
-    try {
-        const existingFlatRateConfiguration = await FlatRateConfigurationModel.find()
-        if (existingFlatRateConfiguration.length > 0) {
-            res.status(409).send('Flat rate configuration already exists')
-        } else {
-            const flatRateConfiguration = new FlatRateConfigurationModel(req.body)
-            await flatRateConfiguration.save()
-            res.status(201).json(flatRateConfiguration)
-        }
-    } catch (err) {
-        req.err = err;
-        next()
-    }
-}
-
 const updateFlatRateConfiguration = async (req, res, next) => {
     try {
         const flatRateConfiguration = await FlatRateConfigurationModel.findOneAndUpdate({_id: req.params.id}, req.body, { new: true });
@@ -41,4 +25,4 @@ const updateFlatRateConfiguration = async (req, res, next) => {
     }
 }
 
-export { getFlatRateConfiguration, createFlatRateConfiguration, updateFlatRateConfiguration }
+export { getFlatRateConfiguration, updateFlatRateConfiguration }

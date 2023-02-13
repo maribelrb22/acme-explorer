@@ -1,11 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "ACME EXPLORER API"
+    "title": "ACME EXPLORER API",
+    "version": "1.0.0"
   },
   "host": "localhost:8080",
   "basePath": "/",
-  "paths": {    
+  "paths": {
     "/actors": {
       "parameters": [
         {
@@ -41,7 +42,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "201": {
             "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/RegisterActor"
@@ -107,6 +108,9 @@
           "400": {
             "description": "Invalid input"
           },
+          "404": {
+            "description": "Actor not found"
+          },
           "500": {
             "description": "Internal server error"
           }
@@ -150,9 +154,550 @@
             "description": "Internal server error"
           }
         }
+      },
+      "post": {
+        "summary": "Create a trip",
+        "description": "This method is used to create a trip, it returns the created trip.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Trip"
+        ],
+        "parameters": [
+          {
+            "name": "trip",
+            "in": "body",
+            "description": "Trip to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateTrip"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Trip"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/trips/{tripId}": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "put": {
+        "summary": "Update a trip",
+        "description": "This method is used to update a trip, it returns the updated trip.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Trip"
+        ],
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "description": "Trip id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "trip",
+            "in": "body",
+            "description": "Trip to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateTrip"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/UpdateActor"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Trip not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a trip",
+        "description": "This method is used to delete a trip.",
+        "tags": [
+          "Trip"
+        ],
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "description": "Trip id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Trip not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/trips/{tripId}/publish": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "patch": {
+        "summary": "Publish a trip",
+        "description": "This method is used to publish a trip.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Trip"
+        ],
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "description": "Trip id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Trip"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Trip not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/trips/{tripId}/cancel": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "patch": {
+        "summary": "Cancel a trip",
+        "description": "This method is used to cancel a trip.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Trip"
+        ],
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "description": "Trip id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cancelReason",
+            "in": "body",
+            "description": "The cancel reason.",
+            "schema": {
+              "type": "object",
+              "required": [
+                "cancelReason"
+              ],
+              "properties": {
+                "cancelReason": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Trip"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Trip not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/sponsorships": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "get": {
+        "summary": "Get all sponsorships",
+        "description": "This method is used to get all sponsoships.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Sponsorship"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Sponsorship"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a sponsorship",
+        "description": "This method is used to create a sponsorship, it returns the created sponsorship.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Sponsorship"
+        ],
+        "parameters": [
+          {
+            "name": "sponsorship",
+            "in": "body",
+            "description": "sponsorship to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateSponsorship"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Sponsorship"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/sponsorships/{sponsorshipId}": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "put": {
+        "summary": "Update a sponsorship",
+        "description": "This method is used to update a sponsorship, it returns the updated sponsorship.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Sponsorship"
+        ],
+        "parameters": [
+          {
+            "name": "sponsorshipId",
+            "in": "path",
+            "description": "Sponsorship id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "sponsorship",
+            "in": "body",
+            "description": "Sponsorship to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateSponsorship"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Sponsorship"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Sponsorship not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Pay a sponsorship",
+        "description": "This method is used to pay a sponsorship.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Sponsorship"
+        ],
+        "parameters": [
+          {
+            "name": "sponsorshipId",
+            "in": "path",
+            "description": "Sponsorship id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Sponsorship"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Trip not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a sponsorship",
+        "description": "This method is used to delete a sponsorship.",
+        "tags": [
+          "Sponsorship"
+        ],
+        "parameters": [
+          {
+            "name": "sponsorshipId",
+            "in": "path",
+            "description": "Sponsorship id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Sponsorship not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/flat-rate": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "get": {
+        "summary": "Get actual flat-rate configuration",
+        "description": "This method is used to get the actual flat-rate configuration.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Flat Rate Configuration"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/FlatRateConfiguration"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/flat-rate/{flatrateId}": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "put": {
+        "summary": "Update the flat rate",
+        "description": "This method is used to update the flat rate, it returns the updated flat rate.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Flat Rate Configuration"
+        ],
+        "parameters": [
+          {
+            "name": "flatrateId",
+            "in": "path",
+            "description": "flat rate id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "flatrate",
+            "in": "body",
+            "description": "flat rate to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/FlatRateConfiguration"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/FlatRateConfiguration"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Flat rate not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
       }
     }
-
   },
   "definitions": {
     "RegisterActor": {
@@ -298,7 +843,7 @@
           "description": "The cancel reason of the trip",
           "example": "The trip is cancelled because..."
         },
-        "pictures" : {
+        "pictures": {
           "type": "array",
           "items": {
             "type": "string"
@@ -309,7 +854,7 @@
             "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
           ]
         },
-        "stages" : {
+        "stages": {
           "type": "array",
           "items": {
             "type": "object",
@@ -354,17 +899,355 @@
           "type": "boolean",
           "description": "The published of the trip",
           "example": "false"
+        }
+      }
+    },
+    "CreateTrip": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "The title of the trip",
+          "example": "Trip to the moon",
+          "required": true
         },
-        "bookings" : {
+        "description": {
+          "type": "string",
+          "description": "The description of the trip",
+          "example": "Trip to the moon",
+          "required": true
+        },
+        "requirements": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "The bookings of the trip",
+          "description": "The requirements of the trip",
           "example": [
-            "5f9f1c9b9b9b9b9b9b9b9b9b",
-            "5f9f1c9b9b9b9b9b9b9b9b9b"
+            "Swimming",
+            "Diving"
+          ],
+          "required": true
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The start moment of the trip",
+          "example": "2020-12-12T12:12:12Z",
+          "required": true
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The end moment of the trip",
+          "example": "2020-12-12T12:12:12Z",
+          "required": true
+        },
+        "pictures": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The pictures of the trip",
+          "example": [
+            "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+            "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+          ],
+          "required": true
+        },
+        "stages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "The title of the stage",
+                "example": "Stage 1"
+              },
+              "description": {
+                "type": "string",
+                "description": "The description of the stage",
+                "example": "Stage 1 description"
+              },
+              "price": {
+                "type": "number",
+                "description": "The price of the stage",
+                "example": "100"
+              }
+            }
+          },
+          "description": "The stages of the trip",
+          "example": [
+            {
+              "title": "Stage 1",
+              "description": "Stage 1 description",
+              "price": "100"
+            },
+            {
+              "title": "Stage 2",
+              "description": "Stage 2 description",
+              "price": "200"
+            }
+          ],
+          "required": true
+        },
+        "manager": {
+          "type": "string",
+          "description": "The manager of the trip",
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b",
+          "required": true
+        }
+      }
+    },
+    "UpdateTrip": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "The title of the trip",
+          "example": "Trip to the moon"
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the trip",
+          "example": "Trip to the moon"
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The requirements of the trip",
+          "example": [
+            "Swimming",
+            "Diving"
           ]
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The start moment of the trip",
+          "example": "2020-12-12T12:12:12Z"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The end moment of the trip",
+          "example": "2020-12-12T12:12:12Z"
+        },
+        "pictures": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The pictures of the trip",
+          "example": [
+            "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+            "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+          ]
+        },
+        "stages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "The title of the stage",
+                "example": "Stage 1"
+              },
+              "description": {
+                "type": "string",
+                "description": "The description of the stage",
+                "example": "Stage 1 description"
+              },
+              "price": {
+                "type": "number",
+                "description": "The price of the stage",
+                "example": "100"
+              }
+            }
+          },
+          "description": "The stages of the trip",
+          "example": [
+            {
+              "title": "Stage 1",
+              "description": "Stage 1 description",
+              "price": "100"
+            },
+            {
+              "title": "Stage 2",
+              "description": "Stage 2 description",
+              "price": "200"
+            }
+          ]
+        },
+        "manager": {
+          "type": "string",
+          "description": "The manager of the trip",
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        }
+      }
+    },
+    "Sponsorship": {
+      "type": "object",
+      "properties": {
+        "paid": {
+          "type": "boolean",
+          "description": "The sponsor has been paid",
+          "example": false
+        },
+        "banner": {
+          "type": "string",
+          "description": "The banner of the sponsorship",
+          "example": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+        },
+        "landingPage": {
+          "type": "string",
+          "description": "The landing page",
+          "example": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+        },
+        "trip": {
+          "type": "string",
+          "description": "The trip",
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        },
+        "sponsor": {
+          "type": "string",
+          "description": "The explorer of the trip",
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        }
+      }
+    },
+    "CreateSponsorship": {
+      "type": "object",
+      "properties": {
+        "banner": {
+          "type": "string",
+          "description": "The banner of the sponsorship",
+          "required": true,
+          "example": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+        },
+        "landingPage": {
+          "type": "string",
+          "description": "The landing page",
+          "required": true,
+          "example": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+        },
+        "trip": {
+          "type": "string",
+          "description": "The trip",
+          "required": true,
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        },
+        "sponsor": {
+          "type": "string",
+          "description": "The explorer of the trip",
+          "required": true,
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        }
+      }
+    },
+    "UpdateSponsorship": {
+      "type": "object",
+      "properties": {
+        "banner": {
+          "type": "string",
+          "description": "The banner of the sponsorship",
+          "example": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+        },
+        "landingPage": {
+          "type": "string",
+          "description": "The landing page",
+          "example": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+        },
+        "trip": {
+          "type": "string",
+          "description": "The trip",
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        },
+        "sponsor": {
+          "type": "string",
+          "description": "The explorer of the trip",
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        }
+      }
+    },
+    "FlatRateConfiguration": {
+      "type": "object",
+      "properties": {
+        "flatRate": {
+          "type": "number",
+          "format": "number",
+          "description": "The configurated flat rate for sponsorships",
+          "example": 200
+        }
+      }
+    },
+    "CreateFlatRateConfiguration": {
+      "type": "object",
+      "properties": {
+        "flatRate": {
+          "type": "number",
+          "format": "number",
+          "description": "The configurated flat rate for sponsorships",
+          "required": true,
+          "example": 200
+        }
+      }
+    },
+    "Booking": {
+      "type": "object",
+      "properties": {
+        "moment": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The ticker of the trip",
+          "example": "2020-12-12T12:12:12Z"
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the booking, it must be PENDING, REJECTED, DUE, ACCEPTED, CANCELLED",
+          "required": true,
+          "example": "PENDING"
+        },
+        "comment": {
+          "type": "string",
+          "description": "The comment for the booking",
+          "example": "Trip to the moon"
+        },
+        "trip": {
+          "type": "string",
+          "description": "The trip",
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        },
+        "explorer": {
+          "type": "string",
+          "description": "The explorer of the trip",
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        }
+      }
+    },
+    "CreateBooking": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "type": "string",
+          "description": "The comment for the booking",
+          "example": "Trip to the moon"
+        },
+        "trip": {
+          "type": "string",
+          "description": "The trip",
+          "required": true,
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        },
+        "explorer": {
+          "type": "string",
+          "description": "The explorer of the trip",
+          "required": true,
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
         }
       }
     }

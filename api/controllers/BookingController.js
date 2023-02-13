@@ -109,4 +109,4 @@ const payBooking = async (req, res, next) => {
     }
 }
 
-export {getBooking, postBooking, acceptBooking, rejectBooking, cancelBooking};
+export {getBooking, postBooking, acceptBooking};

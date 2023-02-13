@@ -3,7 +3,8 @@ import SponsorshipModel from '../models/SponsorshipModel.js';
 
 const getPaidSponsorship = async (req, res, next) => {
     try {
-        const sponsorships = await SponsorshipModel.find({ paid: true })
+        //TODO: A sponsor can only see his sponsorships, and a *manager* can see all paid sponsorships
+        const sponsorships = await SponsorshipModel.find()
         res.status(200).json(sponsorships)
     } catch (err) {
         req.err = err;
