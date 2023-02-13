@@ -2,11 +2,6 @@
 
 import BookingModel from '../models/BookingModel.js';
 
-
-
-
-
-
 const getBooking = async (req, res, next) => {
     try {
         const booking = await BookingModel.find({})
@@ -53,9 +48,3 @@ const acceptBooking = async (req, res, next) => {
 
 
 export {getBooking, postBooking, acceptBooking};
-
-
-
-
-
-export {getBooking, postBooking, acceptBooking, rejectBooking, cancelBooking};

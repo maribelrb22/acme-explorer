@@ -14,14 +14,14 @@ const v1 = express.Router();
 v1.route("/").post(
   creationValidator,
   handleExpressValidation,
-  createActor,
+  createActor, // if user is not authenticated
   sendErrors
 );
 
 v1.route("/:actorId").put(
   putValidator,
   handleExpressValidation,
-  updateActor,
+  updateActor, // if user is authenticated and it is the same user
   sendErrors
 );
 
