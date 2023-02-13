@@ -34,6 +34,12 @@ v1.route('/:id/cancel')
         sendErrors
     )
 
+v1.route('/:id/pay')
+    .patch(
+        payBooking,
+        sendErrors
+    )
+
 const v2 = express.Router();
 
 export const bookingsV1 = v1;

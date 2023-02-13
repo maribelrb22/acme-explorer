@@ -88,5 +88,25 @@ const cancelBooking = async (req, res, next) => {
     }
 }
 
+const payBooking = async (req, res, next) => {
+    try{
+        const booking = await BookingModel.findById(req.params.id)
+        if (booking) {
+            if (booking.status !== 'DUE') {
+                res.status(400).json({message: "Cannot pay booking that is not DUE"})
+                return
+            }
+
+            const updatedBooking = await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "ACCEPTED"}})
+            res.status(200).json(updatedBooking)
+        } else {
+            res.status(404).json({message: "Booking not found"})
+        }
+    }
+    catch (err) {
+        req.err = err;
+        next()
+    }
+}
 
 export {getBooking, postBooking, acceptBooking, rejectBooking, cancelBooking};
