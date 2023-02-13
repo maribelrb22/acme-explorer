@@ -105,7 +105,7 @@ const updateTrip = async (req, res, next) => {
 const cancelTrip = async (req, res, next) => {
     try {
         const trips = await TripModel.find({_id: req.params.tripId});
-        const trip = trips[0];
+        let trip = trips[0];
         if (trip) {
             const startDate = new Date(trip.startDate).getTime();
 
@@ -113,7 +113,7 @@ const cancelTrip = async (req, res, next) => {
             const acceptedBookings = bookings.filter(booking => booking.status === 'ACCEPTED');
 
             if (trip.published && startDate > Date.now() && acceptedBookings.length === 0) {
-                await TripModel.findOneAndUpdate({_id: req.params.tripId}, { cancel: true, cancelReason: req.body.cancelReason }, { new: true });
+                trip = await TripModel.findOneAndUpdate({_id: req.params.tripId}, { cancel: true, cancelReason: req.body.cancelReason }, { new: true });
                 res.status(200).json(trip);
             } else {
                 res.status(409).json({message: 'The trip cannot be cancelled'});
@@ -134,7 +134,7 @@ const deleteTrip = async (req, res, next) => {
         const trip = trips[0]
         if (trip) {
             await TripModel.findOneAndDelete({_id: req.params.tripId});
-            res.status(200).json(trip);
+            res.status(204).json(trip);
         } else {
             res.status(404).send("Trip not found")
         }
