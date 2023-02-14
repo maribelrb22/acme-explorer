@@ -18,4 +18,8 @@ const putValidator = [
     check('role').optional().isString().withMessage("The role must be a string").trim().notEmpty().withMessage("If you want to update the role, you must enter a value").isIn(['ADMINISTRATOR', 'MANAGER', 'EXPLORER','SPONSOR']).withMessage("The role must be a valid role").escape()
 ];
 
+
+
+
+
 export { creationValidator, putValidator };

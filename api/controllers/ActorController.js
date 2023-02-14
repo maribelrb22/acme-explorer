@@ -28,7 +28,7 @@ const updateActor = async (req, res, next) => {
     }
 }
 
-// function to ban an actor
+
 const banActor = async (req, res, next) => {
     try {
         const actor = await ActorModel.findOneAndUpdate({ _id: req.params.actorId }, { banned: true }, { new: true })
@@ -44,7 +44,7 @@ const banActor = async (req, res, next) => {
     }
 }
 
-// function to unban an actor
+
 const unbanActor = async (req, res, next) => {
     try {
         const actor = await ActorModel.findOneAndUpdate({ _id: req.params.actorId }, { banned: false }, { new: true })
