@@ -1,7 +1,7 @@
 'use strict'
 import express from 'express'
 
-import { getBooking, postBooking, acceptBooking, rejectBooking, cancelBooking, dueBooking} from "../controllers/BookingController.js"
+import { getBooking, postBooking, acceptBooking, rejectBooking, cancelBooking, dueBooking, payBooking} from "../controllers/BookingController.js"
 import { creationBookingValidator } from '../controllers/validators/BookingValidator.js'
 import handleExpressValidation from '../middlewares/ValidationHandlingMiddleware.js'
 import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'

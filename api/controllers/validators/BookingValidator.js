@@ -3,9 +3,6 @@ import mongoose from 'mongoose'
 import Trip from '../../models/TripModel.js'
 
 
-const Trip = mongoose.model('Trip');
-
-
 const _validateTrip = async (value) => {
   const trip = await Trip.findById(value);
 
