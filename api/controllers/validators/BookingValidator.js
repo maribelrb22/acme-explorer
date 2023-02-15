@@ -13,11 +13,11 @@ const _validateTrip = async (value) => {
     throw new Error('El trip no existe');
   }
 
-  if (trip.status !== true) {
+  if (trip.published !== true) {
     throw new Error('El trip no está publicado');
   }
 
-  if (trip.status === true  ) {
+  if (trip.cancel === true  ) {
     throw new Error('El trip ha sido cancelado');
   }
 
