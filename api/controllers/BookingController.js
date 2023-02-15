@@ -71,7 +71,6 @@ const cancelBooking = async (req, res, next) => {
         if (booking) {
             if (booking.status !== 'PENDING' && booking.status !== 'ACCEPTED') {
                 res.status(400).json({message: "Cannot cancel a booking that is not PENDING or ACCEPTED"})
-                return
             } else {
                 const updatedBooking = await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "CANCELLED"}})
                 res.status(200).json(updatedBooking)
