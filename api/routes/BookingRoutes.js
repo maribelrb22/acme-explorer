@@ -33,9 +33,18 @@ v1.route('/:id/cancel')
         sendErrors
     )
 
+
 v1.route('/:id/due')
     .patch(
         dueBooking,
+        sendErrors
+    )
+
+
+
+v1.route('/:id/pay')
+    .patch(
+        payBooking,
         sendErrors
     )
 
