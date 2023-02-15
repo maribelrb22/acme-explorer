@@ -12,8 +12,6 @@ const getBooking = async (req, res, next) => {
     }
 }
 
-
-
 const postBooking = async (req, res, next) => {
     req.body.moment = undefined
     req.body.status = undefined
