@@ -12,6 +12,8 @@ const getBooking = async (req, res, next) => {
     }
 }
 
+
+
 const postBooking = async (req, res, next) => {
     req.body.moment = undefined
     req.body.status = undefined
@@ -38,7 +40,8 @@ const postBooking = async (req, res, next) => {
     }
 }
 
-const acceptBooking = async (req, res, next) => {
+//solo lo hace el managers
+const dueBooking = async (req, res, next) => {
     try{
         const booking = await BookingModel.findById(req.params.id)
         if (booking) {
@@ -121,4 +124,72 @@ const payBooking = async (req, res, next) => {
     }
 }
 
-export {getBooking, postBooking, acceptBooking};
+//solo lo hace el manager
+ const rejectBooking = async (req, res, next) => {
+    try{
+        const booking = await BookingModel.findById(req.params.id)
+        if (booking) {
+            if (booking.status !== 'PENDING') {
+                res.status(400).json({message: "Cannot change status of a booking that is not PENDING"})
+                return
+            }
+
+            const updatedBooking = await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "REJECTED"}})
+            res.status(200).json(updatedBooking)
+        } else {
+            res.status(404).json({message: "Booking not found"})
+        }
+    }
+    catch (err) {
+        req.err = err;
+        next()
+    }
+}
+
+//solo cancela el explorer
+const cancelBooking = async (req, res, next) => {
+    try{
+        const booking = await BookingModel.findById(req.params.id)
+        if (booking) {
+            if (booking.status !== 'ACCEPTED' || booking.status !== 'PENDING') {
+                res.status(400).json({message: "Cannot change status of a booking that is not DUE"})
+                return
+            }
+
+            const updatedBooking = await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "CANCELLED"}})
+            res.status(200).json(updatedBooking)
+        } else {
+            res.status(404).json({message: "Booking not found"})
+        }
+    }
+    catch (err) {
+        req.err = err;
+        next()
+    }
+}
+
+
+const acceptBooking = async (req, res, next) => {
+    try{
+        const booking = await BookingModel.findById(req.params.id)
+        if (booking) {
+            if (booking.status !== 'DUE' ) {
+                res.status(400).json({message: "Cannot change status of a booking that is not DUE"})
+                return
+            }
+
+            const updatedBooking = await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "ACCEPTED"}})
+            res.status(200).json(updatedBooking)
+        } else {
+            res.status(404).json({message: "Booking not found"})
+        }
+    }
+    catch (err) {
+        req.err = err;
+        next()
+    }
+}
+
+
+
+export {getBooking, postBooking, acceptBooking, rejectBooking, cancelBooking, dueBooking};
