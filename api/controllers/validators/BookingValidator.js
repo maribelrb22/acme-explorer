@@ -1,5 +1,4 @@
 import { check } from 'express-validator'
-import mongoose from 'mongoose'
 import Trip from '../../models/TripModel.js'
 
 
