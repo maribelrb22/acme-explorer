@@ -5,7 +5,7 @@ import { schema as StatsSchema } from './StatsModel.js'
 import TripModel from './TripModel.js'
 import BookingModel from './BookingModel.js'
 
-const DashboardSchema = new mongoose.Schema({
+const DataWarehouseSchema = new mongoose.Schema({
     tripsPerManagerStats: {
         type: StatsSchema,
         required: 'Enter trips per manager stats'
@@ -24,10 +24,16 @@ const DashboardSchema = new mongoose.Schema({
             ratio: Number
         }],
         required: 'Enter application status ratios'
-    }
+    },
+    computationMoment: {
+        type: Date,
+        default: Date.now
+    },
 }, {strict: false});
 
-const model = mongoose.model('Dashboard', DashboardSchema);
+DataWarehouseSchema.index({ computationMoment: -1 });
+
+const model = mongoose.model('DataWarehouse', DataWarehouseSchema);
 
 const generateDashboard = async () => {
     let tripsPerManagerStats = await TripModel.aggregate([
