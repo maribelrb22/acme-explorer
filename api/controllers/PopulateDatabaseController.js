@@ -84,7 +84,8 @@ const populateDatabase = async (req, res, next) => {
         return {
             moment: chanceGenerator.date({ year: 2023 }),
             status: chanceGenerator.pickone(['PENDING', 'REJECTED', 'DUE', 'ACCEPTED', 'CANCELLED']),
-            comments: chanceGenerator.sentence({ words: 3 }),
+            comments: chanceGenerator.sentence({ words: 10 }),
+            rejectReason: chanceGenerator.sentence({ words: 10 }),
             explorer: explorerId,
             trip: tripId,
         }

@@ -14,7 +14,7 @@ const v1 = express.Router();
 v1.route("/").post(
   creationValidator,
   handleExpressValidation,
-  createActor, // if user is not authenticated
+  createActor, // if user is not authenticated, create a EXPLORER. If user is authenticated as ADMIN, create a MANAGER
   sendErrors
 );
 

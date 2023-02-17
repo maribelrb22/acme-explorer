@@ -77,8 +77,13 @@ const generateDashboard = async () => {
 
 generateDashboard()
     .then((dashboard) => {
-        const newDashboard = new model(dashboard);
-        newDashboard.save();
+        if (dashboard.tripsPerManagerStats !== undefined &&
+            dashboard.applicationsPerTripStats !== undefined &&
+            dashboard.tripPriceStats !== undefined &&
+            dashboard.statusRatios !== []) {
+            const newDashboard = new model(dashboard);
+            newDashboard.save();
+        }
     })
     .catch((err) => {
         console.log(err);

@@ -32,7 +32,7 @@ const dueBooking = async (req, res, next) => {
             if (booking.status !== 'PENDING') {
                 res.status(400).json({message: "Cannot accept a booking that is not PENDING"})
             } else {
-                const updatedBooking = await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "DUE"}})
+                const updatedBooking = await BookingModel.findOneAndUpdate({_id: req.params.id}, {$set: {status: "DUE"}})
                 res.status(200).json(updatedBooking)
             }
         } else {
@@ -52,7 +52,7 @@ const rejectBooking = async (req, res, next) => {
             if (booking.status !== 'PENDING') {
                 res.status(400).json({message: "Cannot reject a booking that is not PENDING"})
             } else {
-                const updatedBooking = await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "REJECTED"}})
+                const updatedBooking = await BookingModel.findOneAndUpdate({_id: req.params.id }, {$set: {status: "REJECTED", rejectReason: req.body.rejectReason}})
                 res.status(200).json(updatedBooking)
             }
         } else {
@@ -72,7 +72,7 @@ const cancelBooking = async (req, res, next) => {
             if (booking.status !== 'PENDING' && booking.status !== 'ACCEPTED') {
                 res.status(400).json({message: "Cannot cancel a booking that is not PENDING or ACCEPTED"})
             } else {
-                const updatedBooking = await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "CANCELLED"}})
+                const updatedBooking = await BookingModel.findOneAndUpdate({_id: req.params.id}, {$set: {status: "CANCELLED"}})
                 res.status(200).json(updatedBooking)
             }
         } else {
@@ -85,14 +85,14 @@ const cancelBooking = async (req, res, next) => {
     }
 }
 
-const acceptBooking = async (req, res, next) => {
+const payBooking = async (req, res, next) => {
     try{
         const booking = await BookingModel.findById(req.params.id)
         if (booking) {
             if (booking.status !== 'DUE' ) {
                 res.status(400).json({message: "Cannot accept a booking that is not DUE"})
             } else {
-                const updatedBooking = await BookingModel.updateOne({_id: req.params.id}, {$set: {status: "ACCEPTED"}})
+                const updatedBooking = await BookingModel.findOneAndUpdate({_id: req.params.id}, {$set: {status: "ACCEPTED"}})
                 res.status(200).json(updatedBooking)
             }
         } else {
@@ -105,6 +105,4 @@ const acceptBooking = async (req, res, next) => {
     }
 }
 
-
-
-export {getBooking, postBooking, acceptBooking, rejectBooking, cancelBooking, dueBooking};
+export {getBooking, postBooking, payBooking, rejectBooking, cancelBooking, dueBooking};

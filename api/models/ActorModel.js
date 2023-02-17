@@ -28,7 +28,6 @@ const ActorSchema = new mongoose.Schema({
         enum: ['ADMINISTRATOR', 'MANAGER', 'EXPLORER', 'SPONSOR'],
         required: 'Enter the role of the actor'
     },
-    
     banned: {
         type: Boolean,
         default: false

@@ -16,6 +16,9 @@ const BookingSchema = new mongoose.Schema({
     comment: {
         type: String,
     },
+    rejectReason: {
+        type: String,
+    },
     trip: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Trip',
