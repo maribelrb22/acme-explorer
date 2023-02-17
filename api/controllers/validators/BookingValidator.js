@@ -20,7 +20,6 @@ const _validateTrip = async (value) => {
   if (trip.startDate < Date.now()) {
     throw new Error('The trip has already started');
   }
-
   return true;
 };
 

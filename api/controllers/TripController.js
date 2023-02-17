@@ -26,7 +26,7 @@ const searchTrips = async (req, res, next) => {
         req.query.startDate !== 'none' && filter.push({ startDate: { $gte: req.query.minDate } })
         req.query.startDate !== 'none' && filter.push({ startDate: { $lte: req.query.maxDate } })
 
-        const trips = await TripModel.find({ $and: filter });
+        const trips = await TripModel.aggregate([{ $match: { $and: filter } }])
         res.status(200).json(trips);
     } catch (err) {
         req.err = err;

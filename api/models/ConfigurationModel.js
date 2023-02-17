@@ -1,7 +1,7 @@
 'use strict'
 import mongoose from 'mongoose';
 
-const FlatRateConfigurationSchema = new mongoose.Schema({
+const ConfigurationSchema = new mongoose.Schema({
     flatRate: {
         type: Number,
         default: 1000,
@@ -11,7 +11,7 @@ const FlatRateConfigurationSchema = new mongoose.Schema({
 
 }, { strict: false });
 
-const model = mongoose.model('FlatRateConfiguration', FlatRateConfigurationSchema);
+const model = mongoose.model('Configuration', ConfigurationSchema);
 
 export const schema = model.schema;
 export default model;

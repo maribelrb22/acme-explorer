@@ -6,7 +6,7 @@ import { bookingsV1 } from './BookingRoutes.js'
 import { tripsV1 } from './TripRoutes.js'
 import { dashboardsV1 } from './DashboardRoutes.js'
 import { sponsorshipsV1 } from './SponsorshipRoutes.js'
-import { flatRateConfigurationsV1 } from './FlatRateConfigurationRoutes.js'
+import { configurationsV1 } from './ConfigurationRoutes.js'
 import { findersV1 } from './FinderRoutes.js'
 import { populateDatabaseV1 } from './PopulateDatabaseRoutes.js'
 
@@ -17,7 +17,7 @@ v1.use('/bookings', bookingsV1)
 v1.use('/trips', tripsV1)
 v1.use('/dashboards', dashboardsV1)
 v1.use('/sponsorships', sponsorshipsV1)
-v1.use('/flat-rate', flatRateConfigurationsV1)
+v1.use('/configurations', configurationsV1)
 v1.use('/finders', findersV1)
 v1.use('/population', populateDatabaseV1)
 

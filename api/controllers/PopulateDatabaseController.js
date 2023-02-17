@@ -4,7 +4,7 @@ import ActorModel from '../models/ActorModel.js'
 import TripModel from '../models/TripModel.js'
 import BookingModel from '../models/BookingModel.js'
 import SponsorshipModel from '../models/SponsorshipModel.js'
-import FlatRateConfigurationModel from '../models/FlatRateConfigurationModel.js'
+import ConfigurationModel from '../models/ConfigurationModel.js'
 import dateFormat from 'dateformat';
 import { customAlphabet } from 'nanoid';
 
@@ -38,8 +38,8 @@ const populateDatabase = async (req, res, next) => {
 
     // Generate 100 trips
     const generateTrip = async () => {
-        const randomManager = chanceGenerator.pickone(await ActorModel.find({ role: 'MANAGER' }));
-        const managerId = randomManager._id.toString();
+        const randomManager = await ActorModel.aggregate([{ $match: { role: 'MANAGER' } }, { $sample: { size: 1 } }]);
+        const managerId = randomManager[0]._id.toString();
 
         return {
           ticker: dateFormat(new Date(), "yymmdd") + '-' + sequenceTickerGenerator(),
@@ -75,8 +75,8 @@ const populateDatabase = async (req, res, next) => {
 
     // Generate 100 bookings
     const generateBookings = async () => {
-        const randomExplorer = chanceGenerator.pickone(await ActorModel.find({ role: 'EXPLORER' }));
-        const explorerId = randomExplorer._id.toString()
+        const randomExplorer = await ActorModel.aggregate([{ $match: { role: 'EXPLORER' } }, { $sample: { size: 1 } }]);
+        const explorerId = randomExplorer[0]._id.toString()
 
         const randomTrip = await TripModel.aggregate([{ $sample: { size: 1 } }]);
         const tripId = randomTrip[0]._id.toString();
@@ -104,7 +104,7 @@ const populateDatabase = async (req, res, next) => {
     }
 
     // Modifies the trips
-    const tripsToModify = await TripModel.find({ published: true, cancel: false })
+    const tripsToModify =  await TripModel.find({ published: true, cancel: false })
     for (let i = 0; i < tripsToModify.length; i++) {
         const trip = tripsToModify[i]
         const bookings = await BookingModel.find({ trip: trip._id, status: 'ACCEPTED' })
@@ -117,11 +117,11 @@ const populateDatabase = async (req, res, next) => {
 
     // Generate 100 sponsorships
     const generateSponsorships = async () => {
-        const randomSponsor = chanceGenerator.pickone(await ActorModel.find({ role: 'SPONSOR' }));
-        const sponsorId = randomSponsor._id.toString()
+        const randomSponsor = await ActorModel.aggregate([{ $match: { role: 'SPONSOR' } }, { $sample: { size: 1 } }]);
+        const sponsorId = randomSponsor[0]._id.toString()
 
-        const randomTrip = chanceGenerator.pickone(await TripModel.find());
-        const tripId = randomTrip._id.toString();
+        const randomTrip = await TripModel.aggregate([{ $sample: { size: 1 } }]);
+        const tripId = randomTrip[0]._id.toString();
 
         return {
             landingPage: chanceGenerator.url(),
@@ -144,14 +144,14 @@ const populateDatabase = async (req, res, next) => {
         next()
     }
 
-    // Generate a flat rate configuration
-    const flatRateConfiguration = await FlatRateConfigurationModel.findOne();
-    if (!flatRateConfiguration) {
-        const flatRateConfiguration = new FlatRateConfigurationModel({
+    // Generate a configuration
+    const configuration = await ConfigurationModel.findOne();
+    if (!configuration) {
+        const newConfiguration = new ConfigurationModel({
             flatRate: 1000
         });
         try {
-            await flatRateConfiguration.save();
+            await newConfiguration.save();
         }
         catch (err) {
             req.err = err;
