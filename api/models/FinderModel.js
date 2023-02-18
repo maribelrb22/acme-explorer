@@ -27,5 +27,7 @@ const FinderSchema = new mongoose.Schema({
 
 const model = mongoose.model('Finder', FinderSchema);
 
+FinderSchema.index({explorer: 1});
+
 export const schema = model.schema;
 export default model;

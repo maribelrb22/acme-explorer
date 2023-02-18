@@ -82,6 +82,10 @@ TripSchema.set('toJSON', {
     }
 });
 
+TripSchema.index({ ticker: 'text', title: 'text', description: 'text' });
+TripSchema.index({ startDate: 1 });
+TripSchema.index({ manager: 1 });
+
 const model = mongoose.model('Trip', TripSchema);
 
 export const schema = model.schema;

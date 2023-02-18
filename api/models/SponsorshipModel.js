@@ -27,6 +27,8 @@ const SponsorshipSchema = new mongoose.Schema({
 
 }, { strict: false });
 
+SponsorshipSchema.index({ sponsor: 1 })    
+
 const model = mongoose.model('Sponsorship', SponsorshipSchema);
 
 export const schema = model.schema;
