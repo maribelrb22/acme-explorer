@@ -2,15 +2,45 @@
 
 import BookingModel from '../models/BookingModel.js';
 
-const getBooking = async (req, res, next) => {
-    try {
-        const booking = await BookingModel.find({})
-        res.status(200).json(booking)
-    } catch (err) {
-        req.err = err;
-        next()
-    }
+const getExplorerBookings = async (explorerId) => {
+    const bookings = await BookingModel.aggregate([
+        {
+            $match: {
+                'explorer': explorerId
+            }
+        },
+        {
+            $group: {
+                _id: '$status',
+                bookings: {
+                    $push: '$$ROOT'
+                }
+            }
+        }
+    ]);
+    return bookings;
 }
+
+const getManagerBookings = async (managerId) => {
+    // join Trip with Bookings and get manager bookings
+    const bookings = await TripModel.aggregate([
+        {
+            $lookup: {
+                from: 'bookings',
+                localField: '_id',
+                foreignField: 'trip',
+                as: 'bookings'
+            }
+        },
+        {
+            $match: {
+                'trip.manager': managerId
+            }
+        }
+    ]);
+    return bookings;
+}
+
 
 const postBooking = async (req, res, next) => {
     req.body.moment = undefined
@@ -105,4 +135,4 @@ const payBooking = async (req, res, next) => {
     }
 }
 
-export {getBooking, postBooking, payBooking, rejectBooking, cancelBooking, dueBooking};
+export {getExplorerBookings, getManagerBookings, postBooking, payBooking, rejectBooking, cancelBooking, dueBooking};
