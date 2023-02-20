@@ -10,22 +10,31 @@ import { listTrips, searchTrips, createTrip, publishTrip, updateTrip, cancelTrip
 
 const v1 = express.Router();
 
+//TODO: Add an endpoint to get my trips
+
 v1.route('/')
+    //Not authenticated and authenticated
     .get(listTrips, sendErrors)
+    //Authenticated as MANAGER
     .post(createTripValidator, handleExpressValidation,  createTrip, sendErrors)
 
 v1.route('/:tripId')
-    .put(updateTripValidator, objectIdValidator, handleExpressValidation, publishOrDeleteValidator, updateTrip, sendErrors) // if user is manager and it is the same user
-    .delete(objectIdValidator, handleExpressValidation, publishOrDeleteValidator, deleteTrip, sendErrors) // if user is manager and it is the same user
+    //Authenticated as MANAGER
+    .put(updateTripValidator, objectIdValidator, handleExpressValidation, publishOrDeleteValidator, updateTrip, sendErrors) 
+    //Authenticated as MANAGER
+    .delete(objectIdValidator, handleExpressValidation, publishOrDeleteValidator, deleteTrip, sendErrors) 
 
 v1.route('/search')
+    //Not authenticated and authenticated
     .get(searchTrips, sendErrors)
 
 v1.route('/:tripId/cancel')
-    .patch(cancelTripValidator, objectIdValidator, handleExpressValidation, cancelTrip, sendErrors) // if user is manager and it is the same user
+    //Authenticated as MANAGER
+    .patch(cancelTripValidator, objectIdValidator, handleExpressValidation, cancelTrip, sendErrors) 
 
 v1.route('/:tripId/publish')
-    .patch(objectIdValidator, handleExpressValidation, publishTrip, sendErrors) // if user is manager and it is the same user
+    //Authenticated as MANAGER
+    .patch(objectIdValidator, handleExpressValidation, publishTrip, sendErrors) 
 
 const v2 = express.Router();
 

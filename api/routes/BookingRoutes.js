@@ -9,12 +9,16 @@ import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'
 const v1 = express.Router();
 
 v1.route('/')
+    //Authenticated as MANAGER or EXPLORER
+    //TODO: divide this route in two different routes (one for manager and other for explorer), because of the different responses
     .get(getBooking,sendErrors) // if user is manager. Return the bookings of his trips. If user is explorer, return his bookings
-    .post(creationBookingValidator, // if user is a explorer
+    //Authenticated as EXPLORER
+    .post(creationBookingValidator,
         handleExpressValidation,
         postBooking,
         sendErrors)
 
+//Authenticated as EXPLORER
 v1.route('/:id/pay')
     .patch(
         objectIdValidator,
@@ -23,6 +27,7 @@ v1.route('/:id/pay')
         sendErrors
     )
 
+//Authenticated as MANAGER
 v1.route('/:id/reject')
     .patch(
         creationRejectValidation,
@@ -32,6 +37,7 @@ v1.route('/:id/reject')
         sendErrors
     )
 
+//Authenticated as EXPLORER
 v1.route('/:id/cancel')
     .patch(
         objectIdValidator,
@@ -40,6 +46,7 @@ v1.route('/:id/cancel')
         sendErrors
     )
 
+//Authenticated as MANAGER
 v1.route('/:id/due')
     .patch(
         objectIdValidator,

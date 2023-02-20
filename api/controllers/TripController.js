@@ -16,15 +16,15 @@ const listTrips = async (req, res, next) => {
 const searchTrips = async (req, res, next) => {
     try {
         const filter = [{}] // if all field equal none, default $and
-        req.query.keyword   !== 'none' && filter.push({ $or: [
+        req.query.keyword !== undefined && filter.push({ $or: [
             { title:        { $regex: req.query.keyword, $options: 'i' } },
             { description:  { $regex: req.query.keyword, $options: 'i' } },
             { ticker:       { $regex: req.query.keyword, $options: 'i' } }
         ] })
-        req.query.minPrice  !== 'none' && filter.push({ price: { $gte: req.query.minPrice } })
-        req.query.maxPrice  !== 'none' && filter.push({ price: { $lte: req.query.maxPrice } })
-        req.query.startDate !== 'none' && filter.push({ startDate: { $gte: req.query.minDate } })
-        req.query.startDate !== 'none' && filter.push({ startDate: { $lte: req.query.maxDate } })
+        req.query.minPrice  !== undefined && filter.push({ price: { $gte: parseFloat(req.query.minPrice) } })
+        req.query.maxPrice  !== undefined && filter.push({ price: { $lte: parseFloat(req.query.maxPrice) } })
+        req.query.minDate !== undefined && filter.push({ startDate: { $gte: req.query.minDate } })
+        req.query.maxDate !== undefined && filter.push({ startDate: { $lte: req.query.maxDate } })
 
         const trips = await TripModel.aggregate([{ $match: { $and: filter } }])
         res.status(200).json(trips);

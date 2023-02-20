@@ -5,6 +5,7 @@ import { getLastIndicator } from "../controllers/DataWarehouseController.js"
 
 const v1 = express.Router();
 
+//Authenticated as ADMIN
 v1.route('/last')
     .get(getLastIndicator)
 

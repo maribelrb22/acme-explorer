@@ -9,12 +9,17 @@ import handleExpressValidation from "../middlewares/ValidationHandlingMiddleware
 const v1 = express.Router();
 
 v1.route('/')
+    //Authenticated as SPONSOR
     .get(getPaidSponsorship, sendErrors)
+    //Authenticated as SPONSOR
     .post(createSponsorshipValidator, handleExpressValidation, createSponsorship, sendErrors)
 
 v1.route('/:id')
+    //Authenticated as SPONSOR
     .put(updateSponsorshipValidator, objectIdValidator, handleExpressValidation, updateSponsorship, sendErrors)
+    //Authenticated as SPONSOR
     .delete(objectIdValidator, handleExpressValidation, deleteSponsorship, sendErrors)
+    //Authenticated as SPONSOR
     .patch(objectIdValidator, handleExpressValidation, paySponsorship, sendErrors)
 
 export const sponsorshipsV1 = v1;

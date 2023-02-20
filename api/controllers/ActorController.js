@@ -3,6 +3,7 @@
 import ActorModel from '../models/ActorModel.js';
 
 const createActor = async (req, res, next) => {
+    req.body.banned = undefined;
     const newActor = new ActorModel(req.body);
     try {
         const actor = await newActor.save();
@@ -14,6 +15,7 @@ const createActor = async (req, res, next) => {
 }
 
 const updateActor = async (req, res, next) => {
+    req.body.banned = undefined;
     try {
         const actor = await ActorModel.findOneAndUpdate({ _id: req.params.actorId }, req.body, { new: true })
         if (actor) {

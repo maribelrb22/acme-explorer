@@ -11,6 +11,7 @@ import sendErrors from "../middlewares/ErrorHandlingMiddleware.js";
 
 const v1 = express.Router();
 
+//Not authenticated and authenticated as ADMIN
 v1.route("/").post(
   creationValidator,
   handleExpressValidation,
@@ -18,20 +19,23 @@ v1.route("/").post(
   sendErrors
 );
 
+//Authenticated and same user
 v1.route("/:actorId").put(
   putValidator,
   handleExpressValidation,
-  updateActor, // if user is authenticated and it is the same user
+  updateActor,
   sendErrors
 );
 
-v1.route("/:id/ban").patch(
-    banActor, 
+//Authenticated as ADMIN
+v1.route("/:actorId/ban").patch( //TODO: validate id is a valid ObjectId
+    banActor, // TODO: validate is not banned
     sendErrors
 );
 
-v1.route("/:id/unban").patch(
-    unbanActor, 
+//Authenticated as ADMIN
+v1.route("/:actorId/unban").patch( //TODO: validate id is a valid ObjectId
+    unbanActor, // TODO: validate is banned
     sendErrors
 );
 

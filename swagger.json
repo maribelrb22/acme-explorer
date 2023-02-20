@@ -23,7 +23,7 @@
       ],
       "post": {
         "summary": "Register an actor",
-        "description": "This method is used to create an actor, it returns the created actor.",
+        "description": "This method is used to create an actor, it returns the created actor. Managers can only be created by administrators. Explorers can be created by any user.",
         "produces": [
           "application/json"
         ],
@@ -45,7 +45,7 @@
           "201": {
             "description": "Successful operation",
             "schema": {
-              "$ref": "#/definitions/RegisterActor"
+              "$ref": "#/definitions/Actor"
             }
           },
           "400": {
@@ -73,7 +73,7 @@
       ],
       "put": {
         "summary": "Update an actor",
-        "description": "This method is used to update an actor, it returns the updated actor.",
+        "description": "This method is used to update an actor, it returns the updated actor. You can only update your own actor.",
         "produces": [
           "application/json"
         ],
@@ -102,7 +102,109 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "$ref": "#/definitions/UpdateActor"
+              "$ref": "#/definitions/Actor"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Actor not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/actors/{actorId}/ban": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "patch": {
+        "summary": "Ban an actor",
+        "description": "This method is used to ban an actor, it returns the updated actor. This method is only available for administrators.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Actor"
+        ],
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "description": "Actor id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Actor"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Actor not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/actors/{actorId}/unban": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "patch": {
+        "summary": "Unban an actor",
+        "description": "This method is used to unban an actor, it returns the updated actor. This method is only available for administrators.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Actor"
+        ],
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "description": "Actor id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Actor"
             }
           },
           "400": {
@@ -133,7 +235,7 @@
       ],
       "get": {
         "summary": "Get all trips",
-        "description": "This method is used to get all trips.",
+        "description": "This method is used to get all trips. This method is available for all users.",
         "produces": [
           "application/json"
         ],
@@ -157,7 +259,7 @@
       },
       "post": {
         "summary": "Create a trip",
-        "description": "This method is used to create a trip, it returns the created trip.",
+        "description": "This method is used to create a trip, it returns the created trip. This method is only available for managers.",
         "produces": [
           "application/json"
         ],
@@ -184,6 +286,84 @@
           },
           "400": {
             "description": "Invalid input"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/trips/search": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "get": {
+        "summary": "Get  trips",
+        "description": "This method is used to get trips. This method is available for all users.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Trip"
+        ],
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "Keyword to search into ticker, title and description",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "description": "Minimum price",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "description": "Maximum price",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "minDate",
+            "in": "query",
+            "description": "Minimium start date",
+            "required": false,
+            "type": "string",
+            "format": "date"
+          },
+          {
+            "name": "maxDate",
+            "in": "query",
+            "description": "Maximum start date",
+            "required": false,
+            "type": "string",
+            "format": "date"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Trip"
+              }
+            }
           },
           "500": {
             "description": "Internal server error"
@@ -399,6 +579,335 @@
         }
       }
     },
+    "/bookings": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "get": {
+        "summary": "Get bookings",
+        "description": "This method is used to get a list of bookings. If user is an explorer, it will return all the applications he made. If user is a manager, it will return all the applications for the trips he manages.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Booking"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Booking"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a booking",
+        "description": "This method is used to create a booking.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Booking"
+        ],
+        "parameters": [
+          {
+            "name": "booking",
+            "in": "body",
+            "description": "The booking to create.",
+            "schema": {
+              "$ref": "#/definitions/CreateBooking"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Booking"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/bookings/{id}/due": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "patch": {
+        "summary": "Set a booking as due",
+        "description": "This method is used to set a booking as due.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Booking"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Booking id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Booking"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Booking not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/bookings/{id}/reject": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "patch": {
+        "summary": "Reject a booking",
+        "description": "This method is used to reject a booking.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Booking"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Booking id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "rejectReason",
+            "in": "body",
+            "description": "The reject reason.",
+            "schema": {
+              "type": "object",
+              "required": [
+                "rejectReason"
+              ],
+              "properties": {
+                "rejectReason": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Booking"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Booking not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/bookings/{id}/pay": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "patch": {
+        "summary": "Set a booking as paid",
+        "description": "This method is used to set a booking as paid.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Booking"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Booking id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Booking"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Booking not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/bookings/{id}/cancel": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "patch": {
+        "summary": "Cancel a booking",
+        "description": "This method is used to cancel a booking.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Booking"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Booking id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Booking"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Booking not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/datawarehouse/last": {
+      "parameters": [
+        {
+          "name": "X-API-Version",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      ],
+      "get": {
+        "summary": "Get last indicators",
+        "description": "This method is used to get the last indicators.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Datawarehouse"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Datawarehouse"
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
     "/sponsorships": {
       "parameters": [
         {
@@ -599,7 +1108,7 @@
         }
       }
     },
-    "/flat-rate": {
+    "/configurations": {
       "parameters": [
         {
           "name": "X-API-Version",
@@ -614,13 +1123,13 @@
         }
       ],
       "get": {
-        "summary": "Get actual flat-rate configuration",
-        "description": "This method is used to get the actual flat-rate configuration.",
+        "summary": "Get actual configuration",
+        "description": "This method is used to get the actual configuration.",
         "produces": [
           "application/json"
         ],
         "tags": [
-          "Flat Rate Configuration"
+          "Configuration"
         ],
         "responses": {
           "200": {
@@ -628,7 +1137,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/FlatRateConfiguration"
+                "$ref": "#/definitions/Configuration"
               }
             }
           },
@@ -638,7 +1147,7 @@
         }
       }
     },
-    "/flat-rate/{flatrateId}": {
+    "/configurations/{id}": {
       "parameters": [
         {
           "name": "X-API-Version",
@@ -659,23 +1168,23 @@
           "application/json"
         ],
         "tags": [
-          "Flat Rate Configuration"
+          "Configuration"
         ],
         "parameters": [
           {
-            "name": "flatrateId",
+            "name": "id",
             "in": "path",
-            "description": "flat rate id",
+            "description": "id",
             "required": true,
             "type": "string"
           },
           {
-            "name": "flatrate",
+            "name": "configuration",
             "in": "body",
             "description": "flat rate to update",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/FlatRateConfiguration"
+              "$ref": "#/definitions/Configuration"
             }
           }
         ],
@@ -683,7 +1192,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "$ref": "#/definitions/FlatRateConfiguration"
+              "$ref": "#/definitions/Configuration"
             }
           },
           "400": {
@@ -700,9 +1209,14 @@
     }
   },
   "definitions": {
-    "RegisterActor": {
+    "Actor": {
       "type": "object",
       "properties": {
+        "_id": {
+          "type": "string",
+          "description": "The id of the actor",
+          "example": "1"
+        },
         "name": {
           "type": "string",
           "description": "The name of the actor",
@@ -732,6 +1246,59 @@
           "type": "string",
           "description": "The role of the actor, it must be ADMINISTRATOR, MANAGER or EXPLORER",
           "required": true,
+          "example": "EXPLORER"
+        },
+        "phone": {
+          "type": "string",
+          "description": "The phone of the actor",
+          "example": "123456789"
+        },
+        "address": {
+          "type": "string",
+          "description": "The address of the actor",
+          "example": "Calle sa 123"
+        },
+        "banned": {
+          "type": "boolean",
+          "description": "The banned status of the actor",
+          "example": "false"
+        }
+      }
+    },
+    "RegisterActor": {
+      "type": "object",
+      "required": [
+        "name",
+        "surname",
+        "email",
+        "password",
+        "role"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the actor",
+          "example": "John Doe"
+        },
+        "surname": {
+          "type": "string",
+          "description": "The surname of the actor",
+          "example": "Doe"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The email of the actor",
+          "example": "jhon@mail.com"
+        },
+        "password": {
+          "type": "string",
+          "description": "The password of the actor, it must be at least 5 characters long, and it must be at least 5 characters long and must contain at least one uppercase letter, one lowercase letter, one number and one special character",
+          "example": "Password123%"
+        },
+        "role": {
+          "type": "string",
+          "description": "The role of the actor, it must be ADMINISTRATOR, MANAGER or EXPLORER",
           "example": "EXPLORER"
         },
         "phone": {
@@ -790,6 +1357,11 @@
     "Trip": {
       "type": "object",
       "properties": {
+        "_id": {
+          "type": "string",
+          "description": "The id of the trip",
+          "example": "1"
+        },
         "ticker": {
           "type": "string",
           "description": "The ticker of the trip",
@@ -904,18 +1476,25 @@
     },
     "CreateTrip": {
       "type": "object",
+      "required": [
+        "title",
+        "description",
+        "requirements",
+        "startDate",
+        "endDate",
+        "stages",
+        "manager"
+      ],
       "properties": {
         "title": {
           "type": "string",
           "description": "The title of the trip",
-          "example": "Trip to the moon",
-          "required": true
+          "example": "Trip to the moon"
         },
         "description": {
           "type": "string",
           "description": "The description of the trip",
-          "example": "Trip to the moon",
-          "required": true
+          "example": "Trip to the moon"
         },
         "requirements": {
           "type": "array",
@@ -926,22 +1505,19 @@
           "example": [
             "Swimming",
             "Diving"
-          ],
-          "required": true
+          ]
         },
         "startDate": {
           "type": "string",
           "format": "date-time",
           "description": "The start moment of the trip",
-          "example": "2020-12-12T12:12:12Z",
-          "required": true
+          "example": "2020-12-12T12:12:12Z"
         },
         "endDate": {
           "type": "string",
           "format": "date-time",
           "description": "The end moment of the trip",
-          "example": "2020-12-12T12:12:12Z",
-          "required": true
+          "example": "2020-12-12T12:12:12Z"
         },
         "pictures": {
           "type": "array",
@@ -952,8 +1528,7 @@
           "example": [
             "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
             "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
-          ],
-          "required": true
+          ]
         },
         "stages": {
           "type": "array",
@@ -989,14 +1564,12 @@
               "description": "Stage 2 description",
               "price": "200"
             }
-          ],
-          "required": true
+          ]
         },
         "manager": {
           "type": "string",
           "description": "The manager of the trip",
-          "example": "5f9f1c9b9b9b9b9b9b9b9b9b",
-          "required": true
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
         }
       }
     },
@@ -1122,29 +1695,31 @@
     },
     "CreateSponsorship": {
       "type": "object",
+      "required": [
+        "banner",
+        "landingPage",
+        "trip",
+        "sponsor"
+      ],
       "properties": {
         "banner": {
           "type": "string",
           "description": "The banner of the sponsorship",
-          "required": true,
           "example": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
         },
         "landingPage": {
           "type": "string",
           "description": "The landing page",
-          "required": true,
           "example": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
         },
         "trip": {
           "type": "string",
           "description": "The trip",
-          "required": true,
           "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
         },
         "sponsor": {
           "type": "string",
           "description": "The explorer of the trip",
-          "required": true,
           "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
         }
       }
@@ -1174,25 +1749,13 @@
         }
       }
     },
-    "FlatRateConfiguration": {
+    "Configuration": {
       "type": "object",
       "properties": {
         "flatRate": {
           "type": "number",
           "format": "number",
           "description": "The configurated flat rate for sponsorships",
-          "example": 200
-        }
-      }
-    },
-    "CreateFlatRateConfiguration": {
-      "type": "object",
-      "properties": {
-        "flatRate": {
-          "type": "number",
-          "format": "number",
-          "description": "The configurated flat rate for sponsorships",
-          "required": true,
           "example": 200
         }
       }
@@ -1200,6 +1763,11 @@
     "Booking": {
       "type": "object",
       "properties": {
+        "_id": {
+          "type": "string",
+          "description": "The id of the booking",
+          "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        },
         "moment": {
           "type": "string",
           "format": "date-time",
@@ -1209,7 +1777,6 @@
         "status": {
           "type": "string",
           "description": "The status of the booking, it must be PENDING, REJECTED, DUE, ACCEPTED, CANCELLED",
-          "required": true,
           "example": "PENDING"
         },
         "comment": {
@@ -1226,11 +1793,20 @@
           "type": "string",
           "description": "The explorer of the trip",
           "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        },
+        "rejectReason": {
+          "type": "string",
+          "description": "The reason for the rejection",
+          "example": "The explorer is not a good person"
         }
       }
     },
     "CreateBooking": {
       "type": "object",
+      "required": [
+        "trip",
+        "explorer"
+      ],
       "properties": {
         "comment": {
           "type": "string",
@@ -1240,14 +1816,41 @@
         "trip": {
           "type": "string",
           "description": "The trip",
-          "required": true,
           "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
         },
         "explorer": {
           "type": "string",
           "description": "The explorer of the trip",
-          "required": true,
           "example": "5f9f1c9b9b9b9b9b9b9b9b9b"
+        }
+      }
+    },
+    "Datawarehouse": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "tripsPerManagerStats": {
+          "type": "object"
+        },
+        "applicationsPerTripStats": {
+          "type": "object"
+        },
+        "tripPriceStats": {
+          "type": "object"
+        },
+        "statusRatios": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "computationMoment": {
+          "type": "string"
+        },
+        "__v": {
+          "type": "number"
         }
       }
     }
