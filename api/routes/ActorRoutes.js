@@ -5,6 +5,7 @@ import { createActor, updateActor, banActor, unbanActor} from "../controllers/Ac
 import {
   creationValidator,
   putValidator,
+  objectIdValidator
 } from "../controllers/validators/ActorValidator.js";
 import handleExpressValidation from "../middlewares/ValidationHandlingMiddleware.js";
 import sendErrors from "../middlewares/ErrorHandlingMiddleware.js";
@@ -28,14 +29,18 @@ v1.route("/:actorId").put(
 );
 
 //Authenticated as ADMIN
-v1.route("/:actorId/ban").patch( //TODO: validate id is a valid ObjectId
-    banActor, // TODO: validate is not banned
+v1.route("/:actorId/ban").patch(
+    objectIdValidator,
+    handleExpressValidation,    
+    banActor,
     sendErrors
 );
 
 //Authenticated as ADMIN
-v1.route("/:actorId/unban").patch( //TODO: validate id is a valid ObjectId
-    unbanActor, // TODO: validate is banned
+v1.route("/:actorId/unban").patch(
+    objectIdValidator,
+    handleExpressValidation,
+    unbanActor,
     sendErrors
 );
 

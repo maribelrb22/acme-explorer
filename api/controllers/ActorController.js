@@ -33,11 +33,14 @@ const updateActor = async (req, res, next) => {
 
 const banActor = async (req, res, next) => {
     try {
-        const actor = await ActorModel.findOneAndUpdate({ _id: req.params.actorId }, { banned: true }, { new: true })
+        const actor = await ActorModel.findOne({ _id: req.params.actorId })
         if (actor) {
+            if (actor.banned) {
+                res.status(400).json({ message: "Actor already banned" });
+            }
+            await ActorModel.findOneAndUpdate({ _id: req.params.actorId }, { banned: true }, { new: true })
             res.status(200).json(actor);
-        }
-        else {
+        } else {
             res.status(404).json({ message: "Actor not found" });
         }
     } catch (err) {
@@ -46,14 +49,16 @@ const banActor = async (req, res, next) => {
     }
 }
 
-
 const unbanActor = async (req, res, next) => {
     try {
-        const actor = await ActorModel.findOneAndUpdate({ _id: req.params.actorId }, { banned: false }, { new: true })
+        const actor = await ActorModel.findOne({ _id: req.params.actorId })
         if (actor) {
+            if (!actor.banned) {
+                res.status(400).json({ message: "Actor not banned" });
+            }
+            await ActorModel.findOneAndUpdate({ _id: req.params.actorId }, { banned: false }, { new: true })
             res.status(200).json(actor);
-        }
-        else {
+        } else {
             res.status(404).json({ message: "Actor not found" });
         }
     } catch (err) {
