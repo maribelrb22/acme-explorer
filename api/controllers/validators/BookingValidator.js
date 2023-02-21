@@ -52,11 +52,11 @@ const objectIdValidator = [
 ];
 
 const isExplorerValidator = [
-  check('explorer').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The explorer must be a valid mongo id').trim().notEmpty().withMessage('The explorer is required').escape().custom(_validateExplorer),
+  check('explorerId').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The explorer must be a valid mongo id').trim().notEmpty().withMessage('The explorer is required').escape().custom(_validateExplorer),
 ];
 
 const isManagerValidator = [
-  check('manager').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The manager must be a valid mongo id').trim().notEmpty().withMessage('The manager is required').escape().custom(_validateManager),
+  check('managerId').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The manager must be a valid mongo id').trim().notEmpty().withMessage('The manager is required').escape().custom(_validateManager),
 ];
 
 export { creationBookingValidator, creationRejectValidation, objectIdValidator, isExplorerValidator, isManagerValidator }
