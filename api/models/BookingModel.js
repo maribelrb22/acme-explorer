@@ -10,9 +10,13 @@ const BookingSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['PENDING', 'REJECTED', 'DUE', 'ACCEPTED', 'CANCELLED'],
-        required: 'Enter the status of the booking'
+        required: 'Enter the status of the booking',
+        default: 'PENDING'
     },
     comment: {
+        type: String,
+    },
+    rejectReason: {
         type: String,
     },
     trip: {

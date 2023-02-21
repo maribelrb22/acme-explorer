@@ -1,12 +1,62 @@
 import { check } from 'express-validator'
+import Trip from '../../models/TripModel.js'
+import Actor from '../../models/ActorModel.js'
+
+const _validateTrip = async (value) => {
+  const trip = await Trip.findById(value);
+
+  if (!trip) {
+    throw new Error('The trip does not exist');
+  }
+
+  if (trip.published !== true) {
+    throw new Error('The trip is not published');
+  }
+
+  if (trip.cancel === true  ) {
+    throw new Error('The trip is cancelled');
+  }
+
+  if (trip.startDate < Date.now()) {
+    throw new Error('The trip has already started');
+  }
+  return true;
+};
+
+const _validateExplorer = async (value) => {
+  const explorers = await Actor.find({ _id: value, role: 'EXPLORER' });
+    if (explorers.length === 0) {
+        throw new Error('The explorer does not exist');
+    } 
+};
+
+const _validateManager = async (value) => {
+  const explorers = await Actor.find({ _id: value, role: 'MANAGER' });
+    if (explorers.length === 0) {
+        throw new Error('The manager does not exist');
+    } 
+};
 
 const creationBookingValidator = [
-  check('moment').exists({ checkNull: true, checkFalsy: true }).isString().withMessage('The date must be in this format 2019-04-11T00:00:00.000+00:00').trim().notEmpty().withMessage('The date is required').escape(),
-  check('status').exists({ checkNull: true, checkFalsy: true }).isString().withMessage('The status must be a string').trim().notEmpty().withMessage('The status is required').isIn(['PENDING', 'REJECTED', 'DUE', 'ACCEPTED', 'CANCELLED']).escape(),
-  check('coment').optional().isString().withMessage('The coment must be a string'),
-  check('trip').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The trip must be a valid mongo id').trim().notEmpty().withMessage('The trip is required').escape(),
-  check('explorer').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The explorer must be a valid mongo id').trim().notEmpty().withMessage('The explorer is required').escape(),
-  
+  check('comment').optional().isString().withMessage('The comment must be a string').escape(),
+  check('trip').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The trip must be a valid mongo id').trim().notEmpty().withMessage('The trip is required').escape().custom(_validateTrip),
+  check('explorer').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The explorer must be a valid mongo id').trim().notEmpty().withMessage('The explorer is required').escape().custom(_validateExplorer),
 ]
 
-export { creationBookingValidator }
+const creationRejectValidation = [
+  check('rejectReason').exists({ checkNull: true, checkFalsy: true }).isString().withMessage('The reject reason must be a string').trim().notEmpty().withMessage('The reject reason is required').escape(),
+]
+
+const objectIdValidator = [
+  check('id').exists().isMongoId().trim().escape(),
+];
+
+const isExplorerValidator = [
+  check('explorerId').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The explorer must be a valid mongo id').trim().notEmpty().withMessage('The explorer is required').escape().custom(_validateExplorer),
+];
+
+const isManagerValidator = [
+  check('managerId').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The manager must be a valid mongo id').trim().notEmpty().withMessage('The manager is required').escape().custom(_validateManager),
+];
+
+export { creationBookingValidator, creationRejectValidation, objectIdValidator, isExplorerValidator, isManagerValidator }
