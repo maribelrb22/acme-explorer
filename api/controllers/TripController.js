@@ -3,6 +3,7 @@
 import TripModel from '../models/TripModel.js';
 import BookingModel from '../models/BookingModel.js';
 import ActorModel from '../models/ActorModel.js';
+import { searchTrips as _searchTrips } from '../services/TripSearcherService.js';
 
 const listTrips = async (req, res, next) => {
     try {
@@ -47,21 +48,17 @@ const getTripById = async (req, res, next) => {
 
 const searchTrips = async (req, res, next) => {
     try {
-        const filter = [{}] // if all field equal none, default $and
-        if (req.query.keyword)
-            filter.push({ $text: { $search: req.query.keyword } })
-        
-        req.query.keyword !== undefined && filter.push({ $or: [
-            { title:        { $regex: req.query.keyword, $options: 'i' } },
-            { description:  { $regex: req.query.keyword, $options: 'i' } },
-            { ticker:       { $regex: req.query.keyword, $options: 'i' } }
-        ] })
-        req.query.minPrice  !== undefined && filter.push({ price: { $gte: parseFloat(req.query.minPrice) } })
-        req.query.maxPrice  !== undefined && filter.push({ price: { $lte: parseFloat(req.query.maxPrice) } })
-        req.query.minDate !== undefined && filter.push({ startDate: { $gte: req.query.minDate } })
-        req.query.maxDate !== undefined && filter.push({ startDate: { $lte: req.query.maxDate } })
+        // get finder cache time from configuration
+        const configuration = await ConfigurationModel.find()
+        const finderSearchLimit = configuration.finderSearchLimit
 
-        const trips = await TripModel.aggregate([{ $match: { $and: filter } }])
+        const trips = await _searchTrips(
+            finderSearchLimit,
+            req.query.keyword,
+            parseFloat(req.query.minPrice),
+            parseFloat(req.query.maxPrice),
+            req.query.minDate,
+            req.query.maxDate)
         res.status(200).json(trips);
     } catch (err) {
         req.err = err;
