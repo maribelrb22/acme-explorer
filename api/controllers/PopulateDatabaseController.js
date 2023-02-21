@@ -5,6 +5,7 @@ import TripModel from '../models/TripModel.js'
 import BookingModel from '../models/BookingModel.js'
 import SponsorshipModel from '../models/SponsorshipModel.js'
 import ConfigurationModel from '../models/ConfigurationModel.js'
+import FinderModel from '../models/FinderModel.js'
 import dateFormat from 'dateformat';
 import { customAlphabet } from 'nanoid';
 
@@ -30,6 +31,32 @@ const populateDatabase = async (req, res, next) => {
     }
     try {
         await ActorModel.insertMany(actors);
+    }
+    catch (err) {
+        req.err = err;
+        next()
+    }
+
+    // Generate 50 finders
+    const generateFinder = (explorerId) => {
+        return {
+            explorer: explorerId,
+            keyword: chanceGenerator.word(),
+            minPrice: chanceGenerator.floating({ min: 0, max: 50 }),
+            maxPrice: chanceGenerator.floating({ min: 51, max: 100 }),
+            minDate: chanceGenerator.date({ year: 2023 }),
+            maxDate: chanceGenerator.date({ year: 2024 })
+        }
+    }
+    const explorers = await ActorModel.aggregate([{ $match: { role: 'EXPLORER' } }, { $sample: { size: 20} }]);
+    const finders = [];
+    explorers.forEach(explorer => {
+        const explorerId = explorer._id.toString();
+        console.log(generateFinder(explorerId))
+        finders.push(generateFinder(explorerId));
+    });
+    try {
+        await FinderModel.insertMany(finders);
     }
     catch (err) {
         req.err = err;
@@ -148,7 +175,9 @@ const populateDatabase = async (req, res, next) => {
     const configuration = await ConfigurationModel.findOne();
     if (!configuration) {
         const newConfiguration = new ConfigurationModel({
-            flatRate: 1000
+            flatRate: 1000,
+            finderCacheSeconds: 60 * 70,
+            finderSearchLimit: 10,
         });
         try {
             await newConfiguration.save();
