@@ -5,12 +5,10 @@ import publishOrDeleteValidator from "../middlewares/PublishValidator.js"
 import handleExpressValidation from "../middlewares/ValidationHandlingMiddleware.js"
 import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'
 import { cancelTripValidator, createTripValidator, updateTripValidator, objectIdValidator } from "../controllers/validators/TripValidator.js"
-import { listTrips, searchTrips, createTrip, publishTrip, updateTrip, cancelTrip, deleteTrip} from "../controllers/TripController.js"
+import { listTrips, getMyTrips, getTripById, searchTrips, createTrip, publishTrip, updateTrip, cancelTrip, deleteTrip} from "../controllers/TripController.js"
 
 
 const v1 = express.Router();
-
-//TODO: Add an endpoint to get my trips
 
 v1.route('/')
     //Not authenticated and authenticated
@@ -18,7 +16,12 @@ v1.route('/')
     //Authenticated as MANAGER
     .post(createTripValidator, handleExpressValidation,  createTrip, sendErrors)
 
+v1.route('/me')
+    //Authenticated as MANAGER
+    .get(getMyTrips, sendErrors)
+
 v1.route('/:tripId')
+    .get(objectIdValidator, handleExpressValidation, getTripById, sendErrors)
     //Authenticated as MANAGER
     .put(updateTripValidator, objectIdValidator, handleExpressValidation, publishOrDeleteValidator, updateTrip, sendErrors) 
     //Authenticated as MANAGER

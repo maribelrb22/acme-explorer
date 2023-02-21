@@ -2,6 +2,7 @@
 
 import TripModel from '../models/TripModel.js';
 import BookingModel from '../models/BookingModel.js';
+import ActorModel from '../models/ActorModel.js';
 
 const listTrips = async (req, res, next) => {
     try {
@@ -13,9 +14,43 @@ const listTrips = async (req, res, next) => {
     }
 }
 
+const getMyTrips = async (req, res, next) => {
+    //TODO: Get the user id from the token
+    const userId = await ActorModel.findOne({});
+    try {
+        const trips = await TripModel.find({ manager: userId });
+        res.status(200).json(trips);
+    } catch (err) {
+        req.err = err;
+        next()
+    }
+}
+
+const getTripById = async (req, res, next) => {
+    try {
+        let trip = await TripModel.findOne({ _id: req.params.tripId });
+        if (trip) {
+            // Only add bookings if the user is the manager of the trip
+            const bookings = await BookingModel.find({ trip: req.params.tripId });
+            trip = trip.toObject();
+            trip.bookings = bookings;
+            res.status(200).json(trip);
+        }
+        else {
+            res.status(404).json({ message: "Trip not found" });
+        }
+    } catch (err) {
+        req.err = err;
+        next()
+    }
+}
+
 const searchTrips = async (req, res, next) => {
     try {
         const filter = [{}] // if all field equal none, default $and
+        if (req.query.keyword)
+            filter.push({ $text: { $search: req.query.keyword } })
+        
         req.query.keyword !== undefined && filter.push({ $or: [
             { title:        { $regex: req.query.keyword, $options: 'i' } },
             { description:  { $regex: req.query.keyword, $options: 'i' } },
@@ -145,4 +180,4 @@ const deleteTrip = async (req, res, next) => {
         next()
     }
 }
-export {listTrips, searchTrips, createTrip, publishTrip, updateTrip, cancelTrip, deleteTrip};
+export {listTrips, getMyTrips, getTripById, searchTrips, createTrip, publishTrip, updateTrip, cancelTrip, deleteTrip};
