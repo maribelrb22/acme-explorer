@@ -1,9 +1,14 @@
 'use strict'
 import mcache from 'memory-cache'
 
-var cacheResponse = function (milliseconds) {
-    return (req, res, next) => {
-        let key = "__express__" + req.originalUrl || req.url
+var cacheFinderResponse = async (req, res, next) => {
+    try {
+        // get finder cache time from configuration
+        const configuration = await ConfigurationModel.find()
+        const finderCacheMillis = configuration.finderCacheSeconds * 1000
+
+        // the explorerId is our cache key
+        let key = req.params.explorerId
 
         // return cached response
         let cachedBody = mcache.get(key)
@@ -14,12 +19,15 @@ var cacheResponse = function (milliseconds) {
             res._send = res.send
             res.send = (body) => {
                 // cache response and send it
-                mcache.put(key, body, milliseconds);
+                mcache.put(key, body, finderCacheMillis);
                 res._send(body);
             }
             next()
         }
+    } catch (err) {
+        req.err = err;
+        next()
     }
 }
 
-export default cacheResponse
+export default cacheFinderResponse
