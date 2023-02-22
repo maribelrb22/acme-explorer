@@ -7,7 +7,12 @@ import { searchTrips as _searchTrips } from '../services/TripSearcherService.js'
 
 const listTrips = async (req, res, next) => {
     try {
-        const trips = await TripModel.find({});
+        //TODO: Use random into aggregation pipeline
+        let trips = await TripModel.find({})
+        trips.forEach(trip => {
+            trip.sponsorships = trip.sponsorships[Math.floor(Math.random() * trip.sponsorships.length)]
+        });
+            
         res.status(200).json(trips);
     } catch (err) {
         req.err = err;
@@ -72,6 +77,7 @@ const createTrip = async (req, res, next) => {
         req.body.cancelReason = undefined;
         req.body.ticker = undefined;
         req.body.published = false;
+        req.body.sponsorships = [];
 
         const startDate = new Date(req.body.startDate).getTime();
         const endDate = new Date(req.body.endDate).getTime();
@@ -111,6 +117,7 @@ const updateTrip = async (req, res, next) => {
         req.body.cancelReason = undefined;
         req.body.ticker = undefined;
         req.body.published = false;
+        req.body.sponsorships = [];
 
         const trips = await TripModel.find({_id: req.params.tripId})
         const trip = trips[0]

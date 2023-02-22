@@ -3,7 +3,7 @@ import chance from "chance";
 import ActorModel from '../models/ActorModel.js'
 import TripModel from '../models/TripModel.js'
 import BookingModel from '../models/BookingModel.js'
-import SponsorshipModel from '../models/SponsorshipModel.js'
+//import SponsorshipModel from '../models/SponsorshipModel.js'
 import ConfigurationModel from '../models/ConfigurationModel.js'
 import FinderModel from '../models/FinderModel.js'
 import dateFormat from 'dateformat';

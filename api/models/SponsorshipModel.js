@@ -7,11 +7,6 @@ const SponsorshipSchema = new mongoose.Schema({
         ref: 'Actor',
         required: 'Enter the sponsor of the sponsorship'
     },
-    trip: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Trip',
-        required: 'Enter the trip of the sponsorship'
-    },
     landingPage: {
         type: String,
         required: 'Enter the landing page of the sponsorship'
@@ -27,9 +22,4 @@ const SponsorshipSchema = new mongoose.Schema({
 
 }, { strict: false });
 
-SponsorshipSchema.index({ sponsor: 1 })    
-
-const model = mongoose.model('Sponsorship', SponsorshipSchema);
-
-export const schema = model.schema;
-export default model;
+export const schema = SponsorshipSchema;

@@ -19,7 +19,7 @@ v1.route('/explorer')
     .get(isExplorerValidator, getExplorerBookings, sendErrors)
 
 v1.route('/manager')
-    .get(getManagerBookings, sendErrors)
+    .get(isManagerValidator, getManagerBookings, sendErrors)
 
 //Authenticated as EXPLORER
 v1.route('/:id/pay')
