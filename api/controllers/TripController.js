@@ -119,7 +119,6 @@ const publishTrip = async (req, res, next) => {
         }
     } catch (err) {
         // check if the role is MANAGER
-        console.log(err);
         req.err = err;
         next()
     }

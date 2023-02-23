@@ -3,7 +3,6 @@ import chance from "chance";
 import ActorModel from '../models/ActorModel.js'
 import TripModel from '../models/TripModel.js'
 import BookingModel from '../models/BookingModel.js'
-//import SponsorshipModel from '../models/SponsorshipModel.js'
 import ConfigurationModel from '../models/ConfigurationModel.js'
 import FinderModel from '../models/FinderModel.js'
 import dateFormat from 'dateformat';
@@ -52,7 +51,6 @@ const populateDatabase = async (req, res, next) => {
     const finders = [];
     explorers.forEach(explorer => {
         const explorerId = explorer._id.toString();
-        console.log(generateFinder(explorerId))
         finders.push(generateFinder(explorerId));
     });
     try {
@@ -67,6 +65,9 @@ const populateDatabase = async (req, res, next) => {
     const generateTrip = async () => {
         const randomManager = await ActorModel.aggregate([{ $match: { role: 'MANAGER' } }, { $sample: { size: 1 } }]);
         const managerId = randomManager[0]._id.toString();
+
+        const randomSponsor = await ActorModel.aggregate([{ $match: { role: 'SPONSOR' } }, { $sample: { size: 1 } }]);
+        const sponsorId = randomSponsor[0]._id.toString();
 
         return {
           ticker: dateFormat(new Date(), "yymmdd") + '-' + sequenceTickerGenerator(),
@@ -84,7 +85,13 @@ const populateDatabase = async (req, res, next) => {
                 price: chanceGenerator.floating({ min: 0, max: 1000, fixed: 2 })
           })),
           manager: managerId,
-          published: chanceGenerator.bool()
+          published: chanceGenerator.bool(),
+          sponsorships: Array(3).fill().map(() => ({
+                banner: chanceGenerator.url({ extensions: ['jpg', 'png'] }),
+                landingPage: chanceGenerator.url(),
+                paid: chanceGenerator.bool(),
+                sponsor: sponsorId
+            }))  
         }
     }
 
@@ -140,35 +147,6 @@ const populateDatabase = async (req, res, next) => {
             trip.cancelReason = chanceGenerator.sentence()
             await trip.save()
         }
-    }
-
-    // Generate 100 sponsorships
-    const generateSponsorships = async () => {
-        const randomSponsor = await ActorModel.aggregate([{ $match: { role: 'SPONSOR' } }, { $sample: { size: 1 } }]);
-        const sponsorId = randomSponsor[0]._id.toString()
-
-        const randomTrip = await TripModel.aggregate([{ $sample: { size: 1 } }]);
-        const tripId = randomTrip[0]._id.toString();
-
-        return {
-            landingPage: chanceGenerator.url(),
-            banner: chanceGenerator.url({ extensions: ['jpg', 'png'] }),
-            sponsor: sponsorId,
-            trip: tripId,
-            paid: chanceGenerator.bool()
-        }
-    }
-
-    const sponsorships = [];
-    for (let i = 0; i < 100; i++) {
-        sponsorships.push(await generateSponsorships());
-    }
-    try {
-        await SponsorshipModel.insertMany(sponsorships);
-    }
-    catch (err) {
-        req.err = err;
-        next()
     }
 
     // Generate a configuration
