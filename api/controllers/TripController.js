@@ -4,14 +4,17 @@ import TripModel from '../models/TripModel.js';
 import BookingModel from '../models/BookingModel.js';
 import ActorModel from '../models/ActorModel.js';
 import { searchTrips as _searchTrips } from '../services/TripSearcherService.js';
+import mongoose from 'mongoose';
 
 const listTrips = async (req, res, next) => {
     try {
-        //TODO: Use random into aggregation pipeline
-        let trips = await TripModel.find({})
-        trips.forEach(trip => {
-            trip.sponsorships = trip.sponsorships[Math.floor(Math.random() * trip.sponsorships.length)]
-        });
+        let trips = await TripModel.aggregate([
+            {
+            $addFields: {
+                sponsorships: { $arrayElemAt: ['$sponsorships', { $floor: { $multiply: [{ $size: '$sponsorships' }, Math.random()] } }] }
+            }
+            }
+        ]);
             
         res.status(200).json(trips);
     } catch (err) {
@@ -22,7 +25,7 @@ const listTrips = async (req, res, next) => {
 
 const getMyTrips = async (req, res, next) => {
     //TODO: Get the user id from the token
-    const userId = await ActorModel.findOne({});
+    const userId = await ActorModel.findOne({ role: 'MANAGER' });
     try {
         const trips = await TripModel.find({ manager: userId });
         res.status(200).json(trips);
@@ -33,13 +36,24 @@ const getMyTrips = async (req, res, next) => {
 }
 
 const getTripById = async (req, res, next) => {
+    //TODO: For showing the bookings, you must be the manager of the trip
     try {
-        let trip = await TripModel.findOne({ _id: req.params.tripId });
+        let trip = await TripModel.aggregate([
+            {
+                $match: {
+                    _id: mongoose.Types.ObjectId(req.params.id)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'bookings',
+                    localField: '_id',
+                    foreignField: 'trip',
+                    as: 'bookings'
+                }
+            }
+        ]);
         if (trip) {
-            // Only add bookings if the user is the manager of the trip
-            const bookings = await BookingModel.find({ trip: req.params.tripId });
-            trip = trip.toObject();
-            trip.bookings = bookings;
             res.status(200).json(trip);
         }
         else {
@@ -97,7 +111,7 @@ const createTrip = async (req, res, next) => {
 
 const publishTrip = async (req, res, next) => {
     try {
-        const trip = await TripModel.findOneAndUpdate({_id: req.params.tripId}, { published: true }, { new: true });
+        const trip = await TripModel.findOneAndUpdate({_id: req.params.id}, { published: true }, { new: true });
         if (trip) {
             res.status(200).json(trip);
         } else {
@@ -119,7 +133,7 @@ const updateTrip = async (req, res, next) => {
         req.body.published = false;
         req.body.sponsorships = [];
 
-        const trips = await TripModel.find({_id: req.params.tripId})
+        const trips = await TripModel.find({_id: req.params.id})
         const trip = trips[0]
         if (trip) {
             const startDate = req.body.startDate ? req.body.startDate : Date(trip.startDate);
@@ -129,7 +143,7 @@ const updateTrip = async (req, res, next) => {
                 req.err.status = 400;
                 next();
             }
-            const tripResponse = await TripModel.findOneAndUpdate({_id: req.params.tripId}, req.body, { new: true });
+            const tripResponse = await TripModel.findOneAndUpdate({_id: req.params.id}, req.body, { new: true });
             res.status(200).json(tripResponse);
         } else {
             res.status(404).send("Trip not found")
@@ -143,16 +157,17 @@ const updateTrip = async (req, res, next) => {
 
 const cancelTrip = async (req, res, next) => {
     try {
-        const trips = await TripModel.find({_id: req.params.tripId});
+        const trips = await TripModel.find({_id: req.params.id});
         let trip = trips[0];
         if (trip) {
             const startDate = new Date(trip.startDate).getTime();
-
+            
+            //TODO: do with aggregate
             const bookings = await BookingModel.find({trip: trip._id});
             const acceptedBookings = bookings.filter(booking => booking.status === 'ACCEPTED');
 
             if (trip.published && startDate > Date.now() && acceptedBookings.length === 0) {
-                trip = await TripModel.findOneAndUpdate({_id: req.params.tripId}, { cancel: true, cancelReason: req.body.cancelReason }, { new: true });
+                trip = await TripModel.findOneAndUpdate({_id: req.params.id}, { cancel: true, cancelReason: req.body.cancelReason }, { new: true });
                 res.status(200).json(trip);
             } else {
                 res.status(409).json({message: 'The trip cannot be cancelled'});
@@ -169,10 +184,10 @@ const cancelTrip = async (req, res, next) => {
 
 const deleteTrip = async (req, res, next) => {
     try {
-        const trips = await TripModel.find({_id : req.params.tripId})
+        const trips = await TripModel.find({_id : req.params.id})
         const trip = trips[0]
         if (trip) {
-            await TripModel.findOneAndDelete({_id: req.params.tripId});
+            await TripModel.findOneAndDelete({_id: req.params.id});
             res.status(204).json(trip);
         } else {
             res.status(404).send("Trip not found")

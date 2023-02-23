@@ -2,7 +2,8 @@
 import express from 'express'
 
 import { getExplorerBookings, getManagerBookings, postBooking, payBooking, rejectBooking, cancelBooking, dueBooking} from "../controllers/BookingController.js"
-import { creationBookingValidator, creationRejectValidation, objectIdValidator, isExplorerValidator, isManagerValidator } from '../controllers/validators/BookingValidator.js'
+import { creationBookingValidator, creationRejectValidation, isExplorerValidator, isManagerValidator } from '../controllers/validators/BookingValidator.js'
+import { objectIdValidator } from '../middlewares/ObjectIdValidator.js'
 import handleExpressValidation from '../middlewares/ValidationHandlingMiddleware.js'
 import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'
 

@@ -30,8 +30,4 @@ const updateSponsorshipValidator = [
     check('trip').optional().isMongoId().custom(_checkTripExists).trim().escape(),
 ];
 
-const objectIdValidator = [
-    check('id').exists().isMongoId().trim().escape(),
-];
-
-export { createSponsorshipValidator, updateSponsorshipValidator, objectIdValidator };
+export { createSponsorshipValidator, updateSponsorshipValidator };

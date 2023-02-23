@@ -46,8 +46,5 @@ const updateTripValidator = [
     check('stages.*.price').exists().isNumeric().withMessage('The price must be a number').trim().notEmpty().withMessage('The price is required').escape(),
 ];
 
-const objectIdValidator = [
-    check('tripId').exists().isMongoId().trim().escape(),
-];
 
-export { cancelTripValidator, createTripValidator, updateTripValidator, objectIdValidator};
+export { cancelTripValidator, createTripValidator, updateTripValidator};

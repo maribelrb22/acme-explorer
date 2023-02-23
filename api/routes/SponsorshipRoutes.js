@@ -3,7 +3,8 @@ import express from 'express'
 
 import { getSponsorshipsByUser, createSponsorship, updateSponsorship, deleteSponsorship, paySponsorship } from "../controllers/SponsorshipController.js"
 import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'
-import { createSponsorshipValidator, updateSponsorshipValidator, objectIdValidator} from "../controllers/validators/SponsorshipValidator.js"
+import { createSponsorshipValidator, updateSponsorshipValidator} from "../controllers/validators/SponsorshipValidator.js"
+import { objectIdValidator } from "../middlewares/ObjectIdValidator.js"
 import handleExpressValidation from "../middlewares/ValidationHandlingMiddleware.js"
 
 const v1 = express.Router();
