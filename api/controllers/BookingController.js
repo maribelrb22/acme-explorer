@@ -75,6 +75,7 @@ const getManagerBookings = async (req, res, next) => {
 const postBooking = async (req, res, next) => {
     req.body.moment = undefined
     req.body.status = undefined
+    req.body.paid = undefined
     try {
         const booking = new BookingModel(req.body)
         await booking.save()
@@ -152,7 +153,7 @@ const payBooking = async (req, res, next) => {
             if (booking.status !== 'DUE') {
                 res.status(400).json({ message: "Cannot accept a booking that is not DUE" })
             } else {
-                const updatedBooking = await BookingModel.findOneAndUpdate({ _id: req.params.id }, { $set: { status: "ACCEPTED" } })
+                const updatedBooking = await BookingModel.findOneAndUpdate({ _id: req.params.id }, { $set: { status: "ACCEPTED", paid: new Date() } })
                 res.status(200).json(updatedBooking)
             }
         } else {

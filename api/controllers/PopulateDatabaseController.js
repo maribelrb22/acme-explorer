@@ -5,7 +5,6 @@ import TripModel from '../models/TripModel.js'
 import BookingModel from '../models/BookingModel.js'
 import ConfigurationModel from '../models/ConfigurationModel.js'
 import FinderModel from '../models/FinderModel.js'
-import dateFormat from 'dateformat';
 import { customAlphabet } from 'nanoid';
 
 const sequenceTickerGenerator = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4);
@@ -70,7 +69,7 @@ const populateDatabase = async (req, res, next) => {
         const sponsorId = randomSponsor[0]._id.toString();
 
         return {
-          ticker: dateFormat(new Date(), "yymmdd") + '-' + sequenceTickerGenerator(),
+          ticker: '220101-' + sequenceTickerGenerator(),
           title: chanceGenerator.sentence({ words: 3 }),      
           description: chanceGenerator.paragraph({ sentences: 2 }),
           startDate: chanceGenerator.date({ year: 2023 }),
@@ -115,11 +114,14 @@ const populateDatabase = async (req, res, next) => {
         const randomTrip = await TripModel.aggregate([{ $sample: { size: 1 } }]);
         const tripId = randomTrip[0]._id.toString();
 
+        const status = chanceGenerator.pickone(['PENDING', 'REJECTED', 'DUE', 'ACCEPTED', 'CANCELLED']);
+
         return {
-            moment: chanceGenerator.date({ year: 2023 }),
-            status: chanceGenerator.pickone(['PENDING', 'REJECTED', 'DUE', 'ACCEPTED', 'CANCELLED']),
+            moment: chanceGenerator.date({ year: 2022, month: 0 }),
+            status: status,
             comments: chanceGenerator.sentence({ words: 10 }),
-            rejectReason: chanceGenerator.bool() ? chanceGenerator.sentence({ words: 10 }) : undefined,
+            rejectReason: status == 'REJECTED' ? chanceGenerator.sentence({ words: 10 }) : undefined,
+            paid: status == 'ACCEPTED' ? chanceGenerator.date({ year: 2022, month: 3 }) : status == 'CANCELLED' ? chanceGenerator.date({ year: 2022, month: 6 }) : undefined,
             explorer: explorerId,
             trip: tripId,
         }
@@ -145,7 +147,7 @@ const populateDatabase = async (req, res, next) => {
         if (bookings.length == 0 && trip.startDate > new Date()) {
             trip.cancel = true
             trip.cancelReason = chanceGenerator.sentence()
-            await trip.save()
+            await TripModel.updateOne({ _id: trip._id }, trip)
         }
     }
 

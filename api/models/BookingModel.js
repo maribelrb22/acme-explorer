@@ -13,6 +13,9 @@ const BookingSchema = new mongoose.Schema({
         required: 'Enter the status of the booking',
         default: 'PENDING'
     },
+    paid: {
+        type: Date,
+    },
     comment: {
         type: String,
     },
