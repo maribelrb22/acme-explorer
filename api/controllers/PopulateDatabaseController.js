@@ -37,31 +37,6 @@ const populateDatabase = async (req, res, next) => {
         next()
     }
 
-    // Generate 50 finders
-    const generateFinder = (explorerId) => {
-        return {
-            _id: explorerId,
-            keyword: chanceGenerator.word(),
-            minPrice: chanceGenerator.floating({ min: 0, max: 50 }),
-            maxPrice: chanceGenerator.floating({ min: 51, max: 100 }),
-            minDate: chanceGenerator.date({ year: 2023 }),
-            maxDate: chanceGenerator.date({ year: 2024 })
-        }
-    }
-    const explorers = await ActorModel.aggregate([{ $match: { role: 'EXPLORER' } }, { $sample: { size: 20} }]);
-    const finders = [];
-    explorers.forEach(explorer => {
-        const explorerId = explorer._id.toString();
-        finders.push(generateFinder(explorerId));
-    });
-    try {
-        await FinderModel.insertMany(finders);
-    }
-    catch (err) {
-        req.err = err;
-        next()
-    }
-
     // Generate 100 trips
     const generateTrip = async () => {
         const randomManager = await ActorModel.aggregate([{ $match: { role: 'MANAGER' } }, { $sample: { size: 1 } }]);
