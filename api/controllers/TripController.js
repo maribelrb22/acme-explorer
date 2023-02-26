@@ -1,8 +1,12 @@
 'use strict'
 
+import mongoose from 'mongoose';
+
 import TripModel from '../models/TripModel.js';
 import BookingModel from '../models/BookingModel.js';
 import ActorModel from '../models/ActorModel.js';
+import FinderModel from '../models/FinderModel.js';
+import ConfigurationModel from '../models/ConfigurationModel.js';
 import { searchTrips as _searchTrips } from '../services/TripSearcherService.js';
 
 const listTrips = async (req, res, next) => {
@@ -46,20 +50,50 @@ const getTripById = async (req, res, next) => {
     }
 }
 
+function _compareFinders(l, r) {
+    return l.keyword === r.keyword &&
+        l.minPrice === r.minPrice &&
+        l.maxPrice === r.maxPrice &&
+        l.minDate.toISOString().substring(0, 10) === r.minDate.toISOString().substring(0, 10) &&
+        l.maxDate.toISOString().substring(0, 10) === r.maxDate.toISOString().substring(0, 10)
+}
+
 const searchTrips = async (req, res, next) => {
     try {
         // get finder cache time from configuration
-        const configuration = await ConfigurationModel.find()
-        const finderSearchLimit = configuration.finderSearchLimit
+        const configuration = await ConfigurationModel.findOne()
+        const finderCacheSeconds = configuration.finderCacheSeconds
 
-        const trips = await _searchTrips(
-            finderSearchLimit,
-            req.query.keyword,
-            parseFloat(req.query.minPrice),
-            parseFloat(req.query.maxPrice),
-            req.query.minDate,
-            req.query.maxDate)
-        res.status(200).json(trips);
+        // create finder with request params
+        const newFinder = {
+            _id: mongoose.Types.ObjectId(req.params.explorerId),
+            keyword: req.query.keyword,
+            minPrice: req.query.minPrice,
+            maxPrice: req.query.maxPrice,
+            minDate: req.query.minDate,
+            maxDate: req.query.maxDate,
+            expireAt: new Date(new Date().getTime() + finderCacheSeconds * 1000)
+        }
+
+        // find user finder
+        const oldFinder = await FinderModel.findOne({ _id: req.params.explorerId })
+
+        // check finder filters are equal to request filters
+        if (oldFinder !== null && _compareFinders(oldFinder, newFinder)) {
+            res.status(200).json(oldFinder.results)
+        } else {
+            // get filter results
+            newFinder.results = await _searchTrips(newFinder)
+
+            // insert new finder
+            if (req.params.explorerId) {
+                await FinderModel.deleteOne({ _id: req.params.explorerId })
+                await FinderModel.create(newFinder)
+            }
+            
+            res.status(200).json(newFinder.results)
+            return
+        }
     } catch (err) {
         req.err = err;
         next()
