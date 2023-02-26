@@ -40,7 +40,7 @@ const populateDatabase = async (req, res, next) => {
     // Generate 50 finders
     const generateFinder = (explorerId) => {
         return {
-            explorer: explorerId,
+            _id: explorerId,
             keyword: chanceGenerator.word(),
             minPrice: chanceGenerator.floating({ min: 0, max: 50 }),
             maxPrice: chanceGenerator.floating({ min: 51, max: 100 }),
@@ -52,7 +52,6 @@ const populateDatabase = async (req, res, next) => {
     const finders = [];
     explorers.forEach(explorer => {
         const explorerId = explorer._id.toString();
-        console.log(generateFinder(explorerId))
         finders.push(generateFinder(explorerId));
     });
     try {
