@@ -8,7 +8,7 @@ import ActorModel from '../models/ActorModel.js';
 import FinderModel from '../models/FinderModel.js';
 import ConfigurationModel from '../models/ConfigurationModel.js';
 import { searchTrips as _searchTrips } from '../services/TripSearcherService.js';
-import mongoose from 'mongoose';
+
 
 const listTrips = async (req, res, next) => {
     try {
