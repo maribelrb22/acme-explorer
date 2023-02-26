@@ -1,34 +1,52 @@
 'use strict'
 
 import TripModel from '../models/TripModel.js'
+import ConfigurationModel from '../models/ConfigurationModel.js'
 
 
-const searchTrips = async (limit, keyword, minPrice, maxPrice, minDate, maxDate) => {
+const searchTrips = async (finder) => {
+    // get finder cache time from configuration
+    const configuration = await ConfigurationModel.findOne()
+    const finderSearchLimit = configuration.finderSearchLimit
+
     // create filters
     var filters = []
 
-    // if (keyword)
-    //     filters.push({ $or: [
-    //         { title:        { $regex: keyword, $options: 'i' } },
-    //         { description:  { $regex: keyword, $options: 'i' } },
-    //         { ticker:       { $regex: keyword, $options: 'i' } }
-    //     ]})
+    if (finder.keyword)
+        filters.push({ $or: [
+            { title:        { $regex: finder.keyword } },
+            { description:  { $regex: finder.keyword } },
+            { ticker:       { $regex: finder.keyword } }
+        ]})
 
-    if (minPrice)
-        filters.push({ price: { $gte: minPrice }})
+    if (finder.minPrice)
+        filters.push({ price: { $gte: finder.minPrice }})
 
-    if (maxPrice)
-        filters.push({ price: { $lte: maxPrice }})
+    if (finder.maxPrice)
+        filters.push({ price: { $lte: finder.maxPrice }})
 
-    if (minDate)
-        filters.push({ startDate: { $gte: minDate }})
+    if (finder.minDate)
+        filters.push({ startDate: { $gte: new Date(finder.minDate) }})
 
-    if (maxDate)
-        filters.push({ startDate: { $lte: maxDate }})
+    if (finder.maxDate)
+        filters.push({ startDate: { $lte: finder.maxDate }})
 
-    console.log(filters)
+    const stages = []
+    if (filters.length > 0) {
+        stages.push({
+            $addFields: { price: { $sum: '$stages.price' } }
+        })
+        stages.push({
+            $match: { $and: filters }
+        })
+    }
 
-    return await TripModel.aggregate([{$match: { $and: filters }}])
+    // limit results
+    stages.push({
+        $limit: finderSearchLimit
+    })
+
+    return await TripModel.aggregate(stages)
 }
 
 export { searchTrips }
