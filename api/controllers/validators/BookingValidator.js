@@ -47,10 +47,6 @@ const creationRejectValidation = [
   check('rejectReason').exists({ checkNull: true, checkFalsy: true }).isString().withMessage('The reject reason must be a string').trim().notEmpty().withMessage('The reject reason is required').escape(),
 ]
 
-const objectIdValidator = [
-  check('id').exists().isMongoId().trim().escape(),
-];
-
 const isExplorerValidator = [
   check('explorerId').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The explorer must be a valid mongo id').trim().notEmpty().withMessage('The explorer is required').escape().custom(_validateExplorer),
 ];
@@ -59,4 +55,4 @@ const isManagerValidator = [
   check('managerId').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The manager must be a valid mongo id').trim().notEmpty().withMessage('The manager is required').escape().custom(_validateManager),
 ];
 
-export { creationBookingValidator, creationRejectValidation, objectIdValidator, isExplorerValidator, isManagerValidator }
+export { creationBookingValidator, creationRejectValidation, isExplorerValidator, isManagerValidator }

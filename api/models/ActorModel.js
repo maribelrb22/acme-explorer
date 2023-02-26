@@ -44,6 +44,8 @@ const ActorSchema = new mongoose.Schema({
     }
 }, { strict: false });
 
+ActorSchema.index({ _id: 1, role: 1 });
+
 ActorSchema.pre('save', function (callback) {
     const actor = this
     bcrypt.genSalt(5, function (err, salt) {

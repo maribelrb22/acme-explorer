@@ -4,9 +4,9 @@ import express from "express";
 import { getActors, getMyPersonalData, createActor, updateActor, banActor, unbanActor} from "../controllers/ActorController.js";
 import {
   creationValidator,
-  putValidator,
-  objectIdValidator
+  putValidator
 } from "../controllers/validators/ActorValidator.js";
+import { objectIdValidator } from "../middlewares/ObjectIdValidator.js";
 import handleExpressValidation from "../middlewares/ValidationHandlingMiddleware.js";
 import sendErrors from "../middlewares/ErrorHandlingMiddleware.js";
 
@@ -33,15 +33,16 @@ v1.route("/me").get(
 );
 
 //Authenticated and same user
-v1.route("/:actorId").put(
+v1.route("/:id").put(
   putValidator,
+  objectIdValidator,
   handleExpressValidation,
   updateActor,
   sendErrors
 );
 
 //Authenticated as ADMIN
-v1.route("/:actorId/ban").patch(
+v1.route("/:id/ban").patch(
     objectIdValidator,
     handleExpressValidation,    
     banActor,
@@ -49,7 +50,7 @@ v1.route("/:actorId/ban").patch(
 );
 
 //Authenticated as ADMIN
-v1.route("/:actorId/unban").patch(
+v1.route("/:id/unban").patch(
     objectIdValidator,
     handleExpressValidation,
     unbanActor,

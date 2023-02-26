@@ -54,9 +54,6 @@ const updateTripValidator = [
     check('stages.*.price').exists().isNumeric().withMessage('The price must be a number').trim().notEmpty().withMessage('The price is required').escape(),
 ];
 
-const objectIdValidator = [
-    check('tripId').exists().isMongoId().trim().escape(),
-];
 
 const searchTripsValidator = [
     check('explorerId').optional({nullable:true}).isMongoId().custom(_checkExplorerExists).trim().escape(),
@@ -67,4 +64,4 @@ const searchTripsValidator = [
     check('maxDate').optional({nullable:true}).optional().isISO8601().withMessage('The max date must be a date').toDate(),
 ];
 
-export { cancelTripValidator, createTripValidator, updateTripValidator, objectIdValidator, searchTripsValidator};
+export { cancelTripValidator, createTripValidator, updateTripValidator, searchTripsValidator};
