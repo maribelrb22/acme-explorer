@@ -3,11 +3,6 @@
 import mongoose from 'mongoose'
 
 const FinderSchema = new mongoose.Schema({
-    explorer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Actor',
-        required: 'Enter the explorer of the finder'
-    },
     keyword: {
         type: String
     },
@@ -22,12 +17,21 @@ const FinderSchema = new mongoose.Schema({
     },
     maxDate: {
         type: Date
-    }
+    },
+    results: {
+        type: Array
+    },
+    expireAt: {
+        type: Date,
+        default: Date.now
+    },
 }, {strict: false});
 
 const model = mongoose.model('Finder', FinderSchema);
 
 FinderSchema.index({explorer: 1});
+FinderSchema.index({expireAt: 1}, {expireAfterSeconds: 0})
+
 
 export const schema = model.schema;
 export default model;
