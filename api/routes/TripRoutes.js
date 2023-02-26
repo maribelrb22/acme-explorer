@@ -4,7 +4,7 @@ import express from 'express'
 import publishOrDeleteValidator from "../middlewares/PublishValidator.js"
 import handleExpressValidation from "../middlewares/ValidationHandlingMiddleware.js"
 import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'
-import { cancelTripValidator, createTripValidator, updateTripValidator, objectIdValidator } from "../controllers/validators/TripValidator.js"
+import { cancelTripValidator, createTripValidator, updateTripValidator, objectIdValidator, searchTripsValidator } from "../controllers/validators/TripValidator.js"
 import { listTrips, getMyTrips, getTripById, searchTrips, createTrip, publishTrip, updateTrip, cancelTrip, deleteTrip} from "../controllers/TripController.js"
 
 
@@ -20,16 +20,16 @@ v1.route('/me')
     //Authenticated as MANAGER
     .get(getMyTrips, sendErrors)
 
+v1.route('/search/:explorerId?')
+    //Not authenticated and authenticated
+    .get(searchTripsValidator, handleExpressValidation, searchTrips, sendErrors)
+
 v1.route('/:tripId')
     .get(objectIdValidator, handleExpressValidation, getTripById, sendErrors)
     //Authenticated as MANAGER
     .put(updateTripValidator, objectIdValidator, handleExpressValidation, publishOrDeleteValidator, updateTrip, sendErrors) 
     //Authenticated as MANAGER
     .delete(objectIdValidator, handleExpressValidation, publishOrDeleteValidator, deleteTrip, sendErrors) 
-
-v1.route('/search')
-    //Not authenticated and authenticated
-    .get(searchTrips, sendErrors)
 
 v1.route('/:tripId/cancel')
     //Authenticated as MANAGER
