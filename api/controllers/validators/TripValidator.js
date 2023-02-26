@@ -16,6 +16,14 @@ const _checkActorExists = async (value) => {
         throw new Error('The actor does not exist');
     }
 };
+
+const _checkExplorerExists = async (value) => {
+    const actors = await ActorModel.find({ _id: value, role: 'EXPLORER' });
+    if (actors.length === 0) {
+        throw new Error('The explorer does not exist');
+    }
+};
+
 const cancelTripValidator = [
     check('cancelReason').exists({ checkNull: true, checkFalsy: true }).isString().withMessage('The cancel reason must be a string').trim().notEmpty().withMessage('The cancel reason is required').escape(),
 ];
@@ -50,4 +58,13 @@ const objectIdValidator = [
     check('tripId').exists().isMongoId().trim().escape(),
 ];
 
-export { cancelTripValidator, createTripValidator, updateTripValidator, objectIdValidator};
+const searchTripsValidator = [
+    check('explorerId').optional({nullable:true}).isMongoId().custom(_checkExplorerExists).trim().escape(),
+    check('keyword').optional({nullable:true}),
+    check('minPrice').optional({nullable:true}).isInt().withMessage('The min price must be an integer number').toInt(),
+    check('maxPrice').optional({nullable:true}).isInt().withMessage('The max price must be an integer number').toInt(),
+    check('minDate').optional({nullable:true}).optional().isISO8601().withMessage('The min date must be a date').toDate(),
+    check('maxDate').optional({nullable:true}).optional().isISO8601().withMessage('The max date must be a date').toDate(),
+];
+
+export { cancelTripValidator, createTripValidator, updateTripValidator, objectIdValidator, searchTripsValidator};
