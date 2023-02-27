@@ -9,7 +9,8 @@ import { generateDataWarehouse } from './DataWarehouseGeneratorService.js'
 // '*/30 * * * * *' cada 30 segundos
 // '*/10 * * * * *' cada 10 segundos
 // '* * * * * *' cada segundo
-let defaultPeriod = '0 0 * * * *'
+// let defaultPeriod = '0 0 * * * *'
+let defaultPeriod = '*/10 * * * * *'
 let computeDataWareHouseJob
 
 const initDataWarehouseCronJob = () => {

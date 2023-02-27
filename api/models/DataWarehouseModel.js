@@ -25,6 +25,15 @@ const DataWarehouseSchema = new mongoose.Schema({
         }],
         required: 'Enter application status ratios'
     },
+    avgFinderPrice: {
+        type: Number
+    },
+    top10FinderKeywords: {
+        type: [{
+            keyword: String,
+            count: Number
+        }],
+    },
     computationMoment: {
         type: Date,
         default: Date.now
