@@ -1,8 +1,8 @@
 'use strict'
 import express from 'express'
 
-import { getExplorerBookings, getManagerBookings, postBooking, payBooking, rejectBooking, cancelBooking, dueBooking} from "../controllers/BookingController.js"
-import { creationBookingValidator, creationRejectValidation, isExplorerValidator, isManagerValidator } from '../controllers/validators/BookingValidator.js'
+import { getExplorerBookings, postBooking, payBooking, rejectBooking, cancelBooking, dueBooking} from "../controllers/BookingController.js"
+import { creationBookingValidator, creationRejectValidation, isExplorerValidator } from '../controllers/validators/BookingValidator.js'
 import { objectIdValidator } from '../middlewares/ObjectIdValidator.js'
 import handleExpressValidation from '../middlewares/ValidationHandlingMiddleware.js'
 import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'
@@ -19,8 +19,6 @@ v1.route('/')
 v1.route('/explorer')
     .get(isExplorerValidator, getExplorerBookings, sendErrors)
 
-v1.route('/manager')
-    .get(isManagerValidator, getManagerBookings, sendErrors)
 
 //Authenticated as EXPLORER
 v1.route('/:id/pay')

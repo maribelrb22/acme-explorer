@@ -18,6 +18,10 @@ const searchTrips = async (finder) => {
             { description:  { $regex: finder.keyword } },
             { ticker:       { $regex: finder.keyword } }
         ]})
+    
+    filters.push({ cancel: false })
+    filters.push({ published: true })
+    filters.push({ startDate: { $gte: new Date() } })
 
     if (finder.minPrice)
         filters.push({ price: { $gte: finder.minPrice }})
@@ -31,22 +35,47 @@ const searchTrips = async (finder) => {
     if (finder.maxDate)
         filters.push({ startDate: { $lte: finder.maxDate }})
 
-    const stages = []
+    const aggStages = []
     if (filters.length > 0) {
-        stages.push({
+        aggStages.push({
             $addFields: { price: { $sum: '$stages.price' } }
         })
-        stages.push({
+        aggStages.push({
             $match: { $and: filters }
         })
     }
 
     // limit results
-    stages.push({
-        $limit: finderSearchLimit
+    aggStages.push({
+        $limit: finderSearchLimit,
     })
 
-    return await TripModel.aggregate(stages)
+    aggStages.push({
+        $addFields: {
+            sponsorships: {
+              $let: {
+                vars: {
+                  paidSponsorships: {
+                    $filter: {
+                      input: "$sponsorships",
+                      as: "sponsorship",
+                      cond: { $ne: ["$$sponsorship.paid", null] }
+                    }
+                  }
+                },
+                in: {
+                  $cond: {
+                    if: { $and: [{ $isArray: "$$paidSponsorships" }, { $gt: [{ $size: "$$paidSponsorships" }, 0] }] },
+                    then: { $arrayElemAt: ["$$paidSponsorships", { $floor: { $multiply: [{ $size: "$$paidSponsorships" }, Math.random()] } }] } ,
+                    else: null
+                  }
+                }
+                }
+                }
+            }
+        })
+
+    return await TripModel.aggregate(aggStages)
 }
 
 export { searchTrips }

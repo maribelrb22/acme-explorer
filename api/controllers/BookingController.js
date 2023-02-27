@@ -3,7 +3,6 @@
 import mongoose from 'mongoose';
 
 import BookingModel from '../models/BookingModel.js';
-import TripModel from '../models/TripModel.js'
 
 
 const getExplorerBookings = async (req, res, next) => {
@@ -30,47 +29,6 @@ const getExplorerBookings = async (req, res, next) => {
         next()
     }
 }
-
-const getManagerBookings = async (req, res, next) => {
-    try {
-        // join Trip with Bookings and get manager bookings
-        const bookings = await TripModel.aggregate([
-            {
-                $match: {
-                    manager: mongoose.Types.ObjectId(req.body.managerId)
-                }
-            },
-            {
-                $project: {
-                    manager: 1
-                }
-            }, 
-            {
-                $lookup: {
-                    from: 'bookings',
-                    localField: '_id',
-                    foreignField: 'trip',
-                    as: 'bookings'
-                }
-            },
-            {
-                $unwind: {
-                    path: '$bookings'
-                }
-            },
-            {
-                $replaceRoot: {
-                    newRoot: '$bookings'
-                }
-            }
-        ]);
-        res.status(200).json(bookings)
-    } catch (err) {
-        req.err = err;
-        next()
-    }
-}
-
 
 const postBooking = async (req, res, next) => {
     req.body.moment = undefined
@@ -166,4 +124,4 @@ const payBooking = async (req, res, next) => {
     }
 }
 
-export { getExplorerBookings, getManagerBookings, postBooking, payBooking, rejectBooking, cancelBooking, dueBooking };
+export { getExplorerBookings, postBooking, payBooking, rejectBooking, cancelBooking, dueBooking };
