@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import bodyParser from 'body-parser'
 import swaggerUi from 'swagger-ui-express'
 
+import { initDataWarehouseCronJob } from './api/services/DataWarehouseCronJobService.js'
 import initMongoDBConnection from './api/config/mongoose.js'
 import versionedRoutes from './api/middlewares/VersionedRoutes.js'
 import v1 from './api/routes/v1.js'
@@ -31,3 +32,5 @@ try{
 catch(err){
   console.error('ACME-Explorer RESTful API could not connect to DB ' + err)
 }
+
+initDataWarehouseCronJob()
