@@ -10,6 +10,13 @@ const _checkPrice = (value) => {
     return true;
 };
 
+const _checkDate = (value) => {
+    if (value < Date.now()) {
+        throw new Error('The date must be greater than or equal to today');
+    }
+    return true;
+};
+
 const _checkActorExists = async (value) => {
     const actors = await ActorModel.find({ _id: value, role: 'MANAGER' });
     if (actors.length === 0) {
@@ -58,10 +65,10 @@ const updateTripValidator = [
 const searchTripsValidator = [
     check('explorerId').optional({nullable:true}).isMongoId().custom(_checkExplorerExists).trim().escape(),
     check('keyword').optional({nullable:true}),
-    check('minPrice').optional({nullable:true}).isInt().withMessage('The min price must be an integer number').toInt(),
-    check('maxPrice').optional({nullable:true}).isInt().withMessage('The max price must be an integer number').toInt(),
-    check('minDate').optional({nullable:true}).optional().isISO8601().withMessage('The min date must be a date').toDate(),
-    check('maxDate').optional({nullable:true}).optional().isISO8601().withMessage('The max date must be a date').toDate(),
+    check('minPrice').optional({nullable:true}).isInt().withMessage('The min price must be an integer number').toInt().custom(_checkPrice),
+    check('maxPrice').optional({nullable:true}).isInt().withMessage('The max price must be an integer number').toInt().custom(_checkPrice),
+    check('minDate').optional({nullable:true}).optional().isISO8601().withMessage('The min date must be a date').toDate().custom(_checkDate),
+    check('maxDate').optional({nullable:true}).optional().isISO8601().withMessage('The max date must be a date').toDate().custom(_checkDate),
 ];
 
 export { cancelTripValidator, createTripValidator, updateTripValidator, searchTripsValidator};

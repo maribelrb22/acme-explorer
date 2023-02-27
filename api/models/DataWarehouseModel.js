@@ -2,8 +2,6 @@
 
 import mongoose from 'mongoose'
 import { schema as StatsSchema } from './StatsModel.js'
-import TripModel from './TripModel.js'
-import BookingModel from './BookingModel.js'
 
 const DataWarehouseSchema = new mongoose.Schema({
     tripsPerManagerStats: {

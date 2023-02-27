@@ -14,11 +14,34 @@ const listTrips = async (req, res, next) => {
     try {
         let trips = await TripModel.aggregate([
             {
-            $addFields: {
-                sponsorships: { $arrayElemAt: ['$sponsorships', { $floor: { $multiply: [{ $size: '$sponsorships' }, Math.random()] } }] }
-            }
-            }
-        ]);
+                $match: { published: true, cancel: false, startDate: { $gt: new Date() } }
+            },
+            {
+                $addFields: {
+                    sponsorships: {
+                      $let: {
+                        vars: {
+                          paidSponsorships: {
+                            $filter: {
+                              input: "$sponsorships",
+                              as: "sponsorship",
+                              cond: { $ne: ["$$sponsorship.paid", null] }
+                            }
+                          }
+                        },
+                        in: {
+                          $cond: {
+                            if: { $and: [{ $isArray: "$$paidSponsorships" }, { $gt: [{ $size: "$$paidSponsorships" }, 0] }] },
+                            then: { $arrayElemAt: ["$$paidSponsorships", { $floor: { $multiply: [{ $size: "$$paidSponsorships" }, Math.random()] } }] } ,
+                            else: null
+                          }
+                        }
+                      }
+                    }
+                  }
+        }
+        ])
+                        
             
         res.status(200).json(trips);
     } catch (err) {
@@ -73,8 +96,8 @@ function _compareFinders(l, r) {
     return l.keyword === r.keyword &&
         l.minPrice === r.minPrice &&
         l.maxPrice === r.maxPrice &&
-        l.minDate.toISOString().substring(0, 10) === r.minDate.toISOString().substring(0, 10) &&
-        l.maxDate.toISOString().substring(0, 10) === r.maxDate.toISOString().substring(0, 10)
+        l.minDate?.toISOString().substring(0, 10) === r.minDate?.toISOString().substring(0, 10) &&
+        l.maxDate?.toISOString().substring(0, 10) === r.maxDate?.toISOString().substring(0, 10)
 }
 
 const searchTrips = async (req, res, next) => {
@@ -94,20 +117,29 @@ const searchTrips = async (req, res, next) => {
             expireAt: new Date(new Date().getTime() + finderCacheSeconds * 1000)
         }
 
+        if(newFinder.minDate !== undefined && newFinder.maxDate !== undefined) {
+            if(newFinder.minDate > newFinder.maxDate) {
+                res.status(400).json({ message: 'Min date must be before max date' });
+            }
+        }
+
+        if (newFinder.minPrice !== undefined && newFinder.maxPrice !== undefined) {
+            if (newFinder.minPrice > newFinder.maxPrice) {
+                res.status(400).json({ message: 'Min price must be before max price' });
+            }
+        }
+
         // find user finder
         const oldFinder = await FinderModel.findOne({ _id: req.params.explorerId })
-
         // check finder filters are equal to request filters
         if (oldFinder !== null && _compareFinders(oldFinder, newFinder)) {
             res.status(200).json(oldFinder.results)
         } else {
             // get filter results
             newFinder.results = await _searchTrips(newFinder)
-
             // insert new finder
             if (req.params.explorerId) {
-                await FinderModel.deleteOne({ _id: req.params.explorerId })
-                await FinderModel.create(newFinder)
+                await FinderModel.findOneAndUpdate({ _id: req.params.explorerId }, newFinder, { upsert: true })
             }
             
             res.status(200).json(newFinder.results)

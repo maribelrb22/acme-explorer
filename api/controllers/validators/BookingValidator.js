@@ -30,12 +30,6 @@ const _validateExplorer = async (value) => {
     } 
 };
 
-const _validateManager = async (value) => {
-  const explorers = await Actor.find({ _id: value, role: 'MANAGER' });
-    if (explorers.length === 0) {
-        throw new Error('The manager does not exist');
-    } 
-};
 
 const creationBookingValidator = [
   check('comment').optional().isString().withMessage('The comment must be a string').escape(),
@@ -51,8 +45,5 @@ const isExplorerValidator = [
   check('explorerId').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The explorer must be a valid mongo id').trim().notEmpty().withMessage('The explorer is required').escape().custom(_validateExplorer),
 ];
 
-const isManagerValidator = [
-  check('managerId').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The manager must be a valid mongo id').trim().notEmpty().withMessage('The manager is required').escape().custom(_validateManager),
-];
 
-export { creationBookingValidator, creationRejectValidation, isExplorerValidator, isManagerValidator }
+export { creationBookingValidator, creationRejectValidation, isExplorerValidator }
