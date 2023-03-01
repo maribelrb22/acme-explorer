@@ -139,7 +139,7 @@ const searchTrips = async (req, res, next) => {
             newFinder.results = await _searchTrips(newFinder)
             // insert new finder
             if (req.params.explorerId) {
-                await FinderModel.findOneAndUpdate({ _id: req.params.explorerId }, newFinder, { upsert: true })
+                await FinderModel.findOneAndReplace({ _id: req.params.explorerId }, newFinder, { upsert: true })
             }
             
             res.status(200).json(newFinder.results)

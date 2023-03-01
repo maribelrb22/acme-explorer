@@ -66,6 +66,7 @@ const generateDataWarehouse = async () => {
                 }
             ],
             "top10FinderKeywords": [
+                { $match: { keyword: { $ne: null } } },
                 { $group: { _id: "$keyword", count: { $sum: 1 } } },
                 { $sort: { count: -1 } },
                 { $limit: 10 },
@@ -79,7 +80,7 @@ const generateDataWarehouse = async () => {
         applicationsPerTripStats: bookingStats[0].applicationsPerTripStats[0],
         tripPriceStats: tripStats[0].tripPriceStats[0],
         statusRatios: bookingStats[0].statusRatios,
-        avgFinderPrice: finderStats[0].avgFinderPrice[0].avgFinderPrice,
+        avgFinderPrice: finderStats[0].avgFinderPrice[0]?.avgFinderPrice || 0,
         top10FinderKeywords: finderStats[0].top10FinderKeywords
     };
 }
