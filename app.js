@@ -3,7 +3,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import bodyParser from 'body-parser'
 import swaggerUi from 'swagger-ui-express'
-
+import swaggerJSDoc from 'swagger-jsdoc'
 import { initDataWarehouseCronJob } from './api/services/DataWarehouseCronJobService.js'
 import initMongoDBConnection from './api/config/mongoose.js'
 import versionedRoutes from './api/middlewares/VersionedRoutes.js'
@@ -14,7 +14,33 @@ import { readFile } from 'fs/promises'
 
 dotenv.config()
 
-let swaggerDocument = JSON.parse(fs.readFileSync('./swagger.json', 'utf8'))
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'ACME Explorer API',
+    version: 'v1',
+    description:
+      'This is a REST API application made with Express. It retrieves data from JSONPlaceholder.',
+    license: {
+      name: 'Licensed Under MIT',
+      url: 'https://spdx.org/licenses/MIT.html',
+    },
+  },
+  servers: [
+    {
+      url: 'http://localhost:8080',
+      description: 'Development server',
+    },
+  ],
+};
+
+const options = {
+  swaggerDefinition,
+  apis: ['./api/routes/*.js', './api/models/*.js'],
+}
+
+const swaggerSpec = swaggerJSDoc(options);
+
 const app = express()
 const port = process.env.PORT || 8080
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -34,7 +60,7 @@ admin.initializeApp({
   databaseURL: 'https://acme-explorer-e1e36-default-rtdb.europe-west1.firebasedatabase.app/'
 })
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(versionedRoutes(['v1', 'v2']))
 app.use('/v1', v1)
 app.use('/v2', v2)

@@ -15,7 +15,6 @@ const getActors = async (req, res, next) => {
 }
 
 const getMyPersonalData = async (req, res, next) => {
-    //TODO: Get the user id from the token
     try {
         const actor = await ActorModel.findOne({ _id: req.params.id })
         res.status(200).json(actor);
@@ -81,13 +80,14 @@ const updateVerifiedActor = async (req, res, next) => {
 
 const banActor = async (req, res, next) => {
     try {
-        const actor = await ActorModel.findOne({ _id: req.params.id })
+        let actor = await ActorModel.findOne({ _id: req.params.id })
         if (actor) {
             if (actor.banned) {
                 res.status(400).json({ message: "Actor already banned" });
+            }else{
+                actor = await ActorModel.findOneAndUpdate({ _id: req.params.id }, { banned: true }, { new: true })
+                res.status(200).json(actor);
             }
-            await ActorModel.findOneAndUpdate({ _id: req.params.id }, { banned: true }, { new: true })
-            res.status(200).json(actor);
         } else {
             res.status(404).json({ message: "Actor not found" });
         }
@@ -99,13 +99,14 @@ const banActor = async (req, res, next) => {
 
 const unbanActor = async (req, res, next) => {
     try {
-        const actor = await ActorModel.findOne({ _id: req.params.id })
+        let actor = await ActorModel.findOne({ _id: req.params.id })
         if (actor) {
             if (!actor.banned) {
                 res.status(400).json({ message: "Actor not banned" });
+            }else{
+                actor = await ActorModel.findOneAndUpdate({ _id: req.params.id }, { banned: false }, { new: true })
+                res.status(200).json(actor);
             }
-            await ActorModel.findOneAndUpdate({ _id: req.params.id }, { banned: false }, { new: true })
-            res.status(200).json(actor);
         } else {
             res.status(404).json({ message: "Actor not found" });
         }
