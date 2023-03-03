@@ -19,16 +19,21 @@
     "swagger-ui-express": "^4.6.0"
   },
   "devDependencies": {
+    "chai": "^4.3.7",
+    "chai-http": "^4.3.0",
     "eslint": "^8.32.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
+    "mocha": "^10.2.0",
     "nodemon": "^2.0.7"
   },
   "scripts": {
+    "test": "mocha ./tests/api.test.js",
     "start": "nodemon --ignore ./example_api_client/ app.js",
     "docker_debug": "nodemon --ignore ./example_api_client/ --inspect=0.0.0.0:9229 app.js"
+    
   },
   "type": "module"
 }
