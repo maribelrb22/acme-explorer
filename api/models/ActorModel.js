@@ -2,6 +2,98 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt'
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     RegisterActor:
+ *       type: object
+ *       required:
+ *         - name
+ *         - surname
+ *         - email
+ *         - password
+ *         - role
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: The name of the actor.
+ *           example: John Doe
+ *         surname:
+ *           type: string
+ *           description: The surname of the actor.
+ *           example: Doe
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: The email of the actor.
+ *           example: john@mail.com
+ *         password:
+ *           type: string
+ *           description: The password of the actor.
+ *           example: Password123%
+ *         role:
+ *           type: string
+ *           description: The role of the actor.
+ *           example: EXPLORER
+ *         phone:
+ *           type: string
+ *           description: The phone of the actor.
+ *           example: 123456789
+ *         address:
+ *           type: string
+ *           description: The address of the actor.
+ *           example: Calle sa 123
+ *     UpdateActor:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: The name of the actor.
+ *           example: John Doe
+ *         surname:
+ *           type: string
+ *           description: The surname of the actor.
+ *           example: Doe
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: The email of the actor.
+ *           example: john@mail.com
+ *         password:
+ *           type: string
+ *           description: The password of the actor.
+ *           example: Password123%
+ *         role:
+ *           type: string
+ *           description: The role of the actor.
+ *           example: EXPLORER
+ *         phone:
+ *           type: string
+ *           description: The phone of the actor.
+ *           example: 123456789
+ *         address:
+ *           type: string
+ *           description: The address of the actor.
+ *           example: Calle sa 123
+ *     Actor:
+ *       allOf:
+ *         - $ref: '#/components/schemas/RegisterActor'
+ *         - type: object
+ *           properties:
+ *             _id:
+ *               type: string
+ *               description: The unique identifier of the actor.
+ *               example: 61f7c0a8839b7c3d3f0baea6
+ *             banned:
+ *               type: boolean
+ *               description: Indicates if the actor is banned or not.
+ *               example: false
+ *
+* */
+
+
+
 const ActorSchema = new mongoose.Schema({
     name: {
         type: String,
