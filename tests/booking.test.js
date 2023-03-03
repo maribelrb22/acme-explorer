@@ -8,21 +8,21 @@ chai.use(chaiHttp);
 
 //-----------------BOOKINGS------------------------------
 //
-describe('App', () => {
-    describe('GET /', () => {
-        it('should return 200', (done) => {
-            const explorerId = '64021b634f62f925ed5c90cc'; // Aquí debes asignar el ID que quieres enviar en el cuerpo de la solicitud
-            chai.request(app)
-                .get('/bookings/explorer')
-                .set('X-API-Version', 'v1') // Aquí agregas el encabezado de versión de la API
-                .send({ explorerId })
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    done();
-                });
-        });
+
+describe('GET Bookings /', () => {
+    it('should return 200', (done) => {
+        const explorerId = '64021b634f62f925ed5c90cc'; // Aquí debes asignar el ID que quieres enviar en el cuerpo de la solicitud
+        chai.request(app)
+            .get('/bookings/explorer')
+            .set('X-API-Version', 'v1') // Aquí agregas el encabezado de versión de la API
+            .send({ explorerId })
+            .end((err, res) => {
+                res.should.have.status(200);
+                done();
+            });
     });
 });
+
 
 
 // 201, Nuevo Booking - POST /bookings
@@ -43,7 +43,7 @@ describe('POST Nuevo Booking/', () => {
 
 // Error 400, ya que el trip ya ha comenzado - POST /bookings
 describe('POST Error Trip Empezado /', () => {
-    it('should return 201', (done) => {
+    it('should return 400', (done) => {
               
         chai.request(app)
             .post('/bookings/')
@@ -57,6 +57,7 @@ describe('POST Error Trip Empezado /', () => {
 });
 
 // PATCH Booking Manager - DUE
+// Va a dar error porque se debe cambiar el ID del booking
 describe('PATCH MANAGER /due', () => {
     it('should return 200', (done) => {
         const bookingId = '64022b147ef514c9e3387a23'; // Aquí debes asignar el ID que quieres enviar en el cuerpo de la solicitud
