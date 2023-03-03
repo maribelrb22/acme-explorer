@@ -41,6 +41,9 @@ const ActorSchema = new mongoose.Schema({
             message: props => `Is not a valid password!, it must be at least 5 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character`
         },
         required: 'Kindly enter the actor password'
+    },
+    customToken: {
+        type: String,
     }
 }, { strict: false });
 
@@ -58,6 +61,14 @@ ActorSchema.pre('save', function (callback) {
         })
     })
 })
+
+// verify password
+ActorSchema.methods.verifyPassword = function (password, cb) {
+    bcrypt.compare(password, this.password, function (err, isMatch) {
+        if (err) return cb(err)
+        cb(null, isMatch)
+    })
+}
 
 ActorSchema.pre('findOneAndUpdate', function (callback) {
     const actor = this._update
