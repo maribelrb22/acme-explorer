@@ -75,6 +75,7 @@ describe('PATCH MANAGER /due', () => {
 
 
 // PATCH Booking Explorer - PAY
+// Va a dar en la segunda ejecuacion porque se debe cambiar el ID del booking
 describe('PATCH EXPLORER /pay', () => {
     it('should return 200', (done) => {
         const bookingId = '64022b147ef514c9e3387a23'; // Aquí debes asignar el ID que quieres enviar en el cuerpo de la solicitud
