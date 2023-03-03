@@ -24,6 +24,7 @@ v1.route('/explorer')
 v1.route('/:id/pay')
     .patch(
         objectIdValidator,
+        isExplorerValidator,
         handleExpressValidation,
         payBooking,
         sendErrors
