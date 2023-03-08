@@ -11,7 +11,7 @@ const getExplorerBookings = async (req, res, next) => {
         const bookings = await BookingModel.aggregate([
             {
                 $match: {
-                    explorer: mongoose.Types.ObjectId(req.body.explorerId)
+                    explorer: mongoose.Types.ObjectId(req.params.id)
                 }
             },
             {

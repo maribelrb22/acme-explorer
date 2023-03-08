@@ -17,13 +17,15 @@ v1.route('/')
     //Authenticated as MANAGER
     .post(createTripValidator, handleExpressValidation,  createTrip, sendErrors)
 
-v1.route('/me')
+v1.route('/me/:id')
     //Authenticated as MANAGER
-    .get(getMyTrips, sendErrors)
+    .get(objectIdValidator, handleExpressValidation, getMyTrips, sendErrors)
 
 v1.route('/search/:explorerId?')
     //Not authenticated and authenticated
     .get(searchTripsValidator, handleExpressValidation, searchTrips, sendErrors)
+
+
 
 v1.route('/:id')
     .get(objectIdValidator, handleExpressValidation, getTripById, sendErrors)

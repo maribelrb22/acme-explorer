@@ -20,7 +20,7 @@ const swaggerDefinition = {
     title: 'ACME Explorer API',
     version: 'v1',
     description:
-      'This is a REST API application made with Express. It retrieves data from JSONPlaceholder.',
+      'This is a REST API application made with Express.',
     license: {
       name: 'Licensed Under MIT',
       url: 'https://spdx.org/licenses/MIT.html',
@@ -36,7 +36,7 @@ const swaggerDefinition = {
 
 const options = {
   swaggerDefinition,
-  apis: ['./api/routes/*.js', './api/models/*.js'],
+  apis: ['./api/api-doc/*.js','./api/routes/*.js', './api/models/*.js', ],
 }
 
 const swaggerSpec = swaggerJSDoc(options);

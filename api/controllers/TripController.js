@@ -51,10 +51,8 @@ const listTrips = async (req, res, next) => {
 }
 
 const getMyTrips = async (req, res, next) => {
-    //TODO: Get the user id from the token
-    const userId = await ActorModel.findOne({ role: 'MANAGER' });
     try {
-        const trips = await TripModel.find({ manager: userId });
+        const trips = await TripModel.find({ manager: req.params.id });
         res.status(200).json(trips);
     } catch (err) {
         req.err = err;
@@ -153,6 +151,7 @@ const searchTrips = async (req, res, next) => {
 
 const createTrip = async (req, res, next) => {
     try {
+        console.log(req.body);
         req.body.cancel = false;
         req.body.cancelReason = undefined;
         req.body.ticker = undefined;

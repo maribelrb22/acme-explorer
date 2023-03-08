@@ -93,22 +93,22 @@ const getExplorers = async (req, res, next) => {
 
     switch (operator) {
         case "equal":
-            matchOperation = { $eq: price }
+            matchOperation = { $eq: parseFloat(price) }
             break
         case "not equal":
-            matchOperation = { $ne: price }
+            matchOperation = { $ne: parseFloat(price) }
             break
         case "greater than":
-            matchOperation = { $gt: price }
+            matchOperation = { $gt: parseFloat(price) }
             break
         case "greater than or equal":
-            matchOperation = { $gte: price }
+            matchOperation = { $gte: parseFloat(price) }
             break
         case "smaller than":
-            matchOperation = { $lt: price }
+            matchOperation = { $lt: parseFloat(price) }
             break
         case "smaller than or equal":
-            matchOperation = { $lte: price }
+            matchOperation = { $lte: parseFloat(price) }
             break
     }
 

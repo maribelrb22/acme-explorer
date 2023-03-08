@@ -40,6 +40,7 @@ const createSponsorship = async (req, res, next) => {
 const updateSponsorship = async (req, res, next) => {
     try {
         req.body.paid = false;
+        req.body.sponsor = undefined;
         const trip = await TripModel.findOneAndUpdate({'sponsorships._id': req.params.id}, { $set: { 'sponsorships.$': req.body } }, { new: true });
         if (trip) {
             res.status(200).json(trip)

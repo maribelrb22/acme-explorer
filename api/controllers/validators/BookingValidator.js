@@ -42,7 +42,7 @@ const creationRejectValidation = [
 ]
 
 const isExplorerValidator = [
-  check('explorerId').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The explorer must be a valid mongo id').trim().notEmpty().withMessage('The explorer is required').escape().custom(_validateExplorer),
+  check('id').exists({ checkNull: true, checkFalsy: true }).isMongoId().withMessage('The explorer must be a valid mongo id').trim().notEmpty().withMessage('The explorer is required').escape().custom(_validateExplorer),
 ];
 
 

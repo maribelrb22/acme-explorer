@@ -10,11 +10,9 @@ import handleValidation from '../middlewares/ValidationHandlingMiddleware.js'
 const v1 = express.Router();
 
 v1.route('/')
-    //Authenticated as ADMIN
     .get(getConfiguration, sendErrors)
 
 v1.route('/:id')
-    //Authenticated as ADMIN
     .put(updateValidator, objectIdValidator, handleValidation, updateConfiguration, sendErrors)
 
 export const configurationsV1 = v1;

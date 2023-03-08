@@ -8,7 +8,6 @@ import sendErrors from "../middlewares/ErrorHandlingMiddleware.js";
 
 const v1 = express.Router();
 
-//Authenticated as ADMIN
 v1.route('/last')
     .get(getLastIndicator)
 
