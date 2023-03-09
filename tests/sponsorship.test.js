@@ -30,7 +30,7 @@ describe("POST Nuevo Sponsorship /sponsorships", () => {
 
 describe("PUT Sponsorship /sponsorships/:id", () => {
     it("should return 200", (done) => {
-        const sponsorshipId = '6404a303dd33ace3a6cf57be';
+        const sponsorshipId = '6409c53b7698f714233a0b35';
         chai
         .request(app)
         .put('/sponsorships/' + sponsorshipId + '/')

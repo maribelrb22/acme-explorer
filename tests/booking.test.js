@@ -40,9 +40,39 @@ describe('POST Nuevo Booking/', () => {
     });
 });
 
+// Codigo de error, Error por trip no publicado - POST /bookings
+describe('POST Error Booking - Trip no publicado /bookings', () => {
+    it('should return 400', (done) => {
+              
+        chai.request(app)
+            .post('/bookings/')
+            .set('X-API-Version', 'v1') // Aquí agregas el encabezado de versión de la API
+            .send({ comment: "Test Mocha - trip no publicado", trip: "64023a9e7680766629e8e2f0", explorer: "64021b634f62f925ed5c90cc" })
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
+    });
+});
+
+// Codigo de error, Error por trip cancelado - POST /bookings
+describe('POST Error Booking - Trip Cancelado /bookings', () => {
+    it('should return 400', (done) => {
+              
+        chai.request(app)
+            .post('/bookings/')
+            .set('X-API-Version', 'v1') // Aquí agregas el encabezado de versión de la API
+            .send({ comment: "Test Mocha - trip Cancelado", trip: "640237e2be6f5489f060da1f", explorer: "64021b634f62f925ed5c90cc" })
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
+    });
+});
+
 
 // Error 400, ya que el trip ya ha comenzado - POST /bookings
-describe('POST Error Trip Empezado /', () => {
+describe('POST Error Booking - Trip Empezado /bookings', () => {
     it('should return 400', (done) => {
               
         chai.request(app)

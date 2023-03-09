@@ -34,11 +34,11 @@ describe("POST NEW ACTOR / ", () => {
       .post("/actors/")
       .set("X-API-Version", "v1") // Aquí agregas el encabezado de versión de la API
       .send({
-        name: "BrianTestMocha",
+        name: "SponsorMocha",
         surname: "TestapellidoChai",
-        email: "brianmocha1@hotmail.com",
+        email: "sponsormocha1@hotmail.com",
         password: "MyPassw0rd!",
-        role: "EXPLORER",
+        role: "SPONSOR",
       })
       .end((err, res) => {
         res.should.have.status(201);
