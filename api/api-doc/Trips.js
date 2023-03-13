@@ -772,6 +772,17 @@
  *         required: true
  *         type: string
  *         description: The id of the trip
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - cancelReason
+ *             properties:
+ *               cancelReason:
+ *                 type: string
  *     description: Cancels the trip with the given id. It can be used only by the manager.
  *     summary: Cancels the trip with the given id
  *     produces:

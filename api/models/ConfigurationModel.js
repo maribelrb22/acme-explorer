@@ -11,7 +11,7 @@ const ConfigurationSchema = new mongoose.Schema({
     finderCacheSeconds: {
         type: Number,
         default: 60 * 60,
-        min: 60,
+        min: 60 * 60,
         max: 60 * 60 * 24,
         required: 'Enter the finder cache time of the configuration',
     },

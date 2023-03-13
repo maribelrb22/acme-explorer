@@ -59,7 +59,7 @@ const searchTrips = async (finder) => {
                     $filter: {
                       input: "$sponsorships",
                       as: "sponsorship",
-                      cond: { $ne: ["$$sponsorship.paid", null] }
+                      cond: { $ne: ["$$sponsorship.paid", false] }
                     }
                   }
                 },

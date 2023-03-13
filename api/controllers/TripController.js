@@ -25,7 +25,7 @@ const listTrips = async (req, res, next) => {
                             $filter: {
                               input: "$sponsorships",
                               as: "sponsorship",
-                              cond: { $ne: ["$$sponsorship.paid", null] }
+                              cond: { $ne: ["$$sponsorship.paid", false] }
                             }
                           }
                         },
@@ -37,12 +37,13 @@ const listTrips = async (req, res, next) => {
                           }
                         }
                       }
+                    },
+                    price: {
+                        $sum: "$stages.price"
                     }
                   }
-        }
-        ])
-                        
-            
+            }
+        ])    
         res.status(200).json(trips);
     } catch (err) {
         req.err = err;
@@ -61,7 +62,6 @@ const getMyTrips = async (req, res, next) => {
 }
 
 const getTripById = async (req, res, next) => {
-    //TODO: For showing the bookings, you must be the manager of the trip
     try {
         let trip = await TripModel.aggregate([
             {
@@ -226,7 +226,6 @@ const cancelTrip = async (req, res, next) => {
         if (trip) {
             const startDate = new Date(trip.startDate).getTime();
             
-            //TODO: do with aggregate
             const bookings = await BookingModel.find({trip: trip._id});
             const acceptedBookings = bookings.filter(booking => booking.status === 'ACCEPTED');
 

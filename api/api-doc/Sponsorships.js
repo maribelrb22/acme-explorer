@@ -38,8 +38,8 @@
  *             example:
  *               sponsor: 5e9f1c8e3b0e2d2f2c5f5b8c
  *               trip: 5e9f1c8e3b0e2d2f2c5f5b8c
- *               landingPage: 5e9f1c8e3b0e2d2f2c5f5b8c
- *               banner: 5e9f1c8e3b0e2d2f2c5f5b8c
+ *               landingPage: youtube.com
+ *               banner: youtube.com/image.png
  *     responses:
  *       201:
  *         description: The sponsorship was created in the trip

@@ -6,7 +6,8 @@ const getSponsorshipsByUser = async (req, res, next) => {
     try {
         let trips = await TripModel.aggregate([
             {$unwind: "$sponsorships"},
-            {$match: {"sponsorships.sponsor": mongoose.Types.ObjectId(req.params.id)}}
+            {$match: {"sponsorships.sponsor": mongoose.Types.ObjectId(req.params.id)}},
+            {$addFields: { price: { $sum: '$stages.price' } }}
         ])
         res.status(200).json(trips)
     } catch (err) {
@@ -41,7 +42,14 @@ const updateSponsorship = async (req, res, next) => {
     try {
         req.body.paid = false;
         req.body.sponsor = undefined;
-        const trip = await TripModel.findOneAndUpdate({'sponsorships._id': req.params.id}, { $set: { 'sponsorships.$': req.body } }, { new: true });
+
+        const originalSponsorship = await TripModel.findOne({'sponsorships._id': req.params.id}, { 'sponsorships.$': 1 });
+        const sponsorship = ({
+            landingPage: req.body.landingPage,
+            banner: req.body.banner ? req.body.banner : originalSponsorship.sponsorships[0].banner,
+            sponsor: req.body.sponsor ? req.body.sponsor : originalSponsorship.sponsorships[0].sponsor,
+        })
+        const trip = await TripModel.findOneAndUpdate({'sponsorships._id': req.params.id}, { $set: { 'sponsorships.$': sponsorship } }, { new: true });
         if (trip) {
             res.status(200).json(trip)
         } else {
