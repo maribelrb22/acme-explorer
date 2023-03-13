@@ -29,7 +29,6 @@ const FinderSchema = new mongoose.Schema({
 
 const model = mongoose.model('Finder', FinderSchema);
 
-FinderSchema.index({explorer: 1});
 FinderSchema.index({expireAt: 1}, {expireAfterSeconds: 0})
 
 

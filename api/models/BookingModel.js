@@ -34,8 +34,7 @@ const BookingSchema = new mongoose.Schema({
     },
 }, {strict: false});
 
-BookingSchema.index({explorer:1, paid:1});
-BookingSchema.index({paid:1});
+BookingSchema.index({explorer:1});
 
 const model = mongoose.model('Booking', BookingSchema);
 

@@ -47,7 +47,7 @@ const ActorSchema = new mongoose.Schema({
     }
 }, { strict: false });
 
-ActorSchema.index({ _id: 1, role: 1 });
+ActorSchema.index({ email:1 });
 
 ActorSchema.pre('save', function (callback) {
     const actor = this
@@ -87,7 +87,6 @@ ActorSchema.pre('findOneAndUpdate', function (callback) {
         callback()
     }
 })
-
 const model = mongoose.model('Actor', ActorSchema);
 
 export const schema = model.schema;
