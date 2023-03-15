@@ -154,6 +154,39 @@
 /**
  * @swagger
  * /actors/{id}:
+ *   get:
+ *     summary: Get an actor
+ *     description: This method is used to get an actor by its ID.
+ *     produces:
+ *       - application/json
+ *     tags:
+ *       - Actor
+ *     parameters:
+ *       - name: X-API-Version
+ *         in: header
+ *         required: true
+ *         type: string
+ *         default: v1
+ *         enum:
+ *           - v1
+ *           - v2
+ *       - name: id
+ *         in: path
+ *         description: ID of the actor to get
+ *         required: true
+ *         type: string
+ *         example: 5fdecbcc7a68f5468d5b27f4
+ *     responses:
+ *       200:
+ *         description: The actor was obtained
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Actor'
+ *       404:
+ *         description: The actor was not found
+ *       500:
+ *         description: Internal server error
  *   put:
  *     summary: Update an actor
  *     description: This method is used to update an actor by its ID. An actor can only update its own data.

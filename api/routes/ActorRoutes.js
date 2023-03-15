@@ -17,7 +17,6 @@ import sendErrors from "../middlewares/ErrorHandlingMiddleware.js";
 import { verifyUser } from "../controllers/AuthController.js";
 
 const v1 = express.Router();
-const v2 = express.Router();
 
 v1.route("/")
   .get(getActors, sendErrors)
@@ -28,24 +27,15 @@ v1.route("/")
     sendErrors
   );
 
-v1.route("/:id").put(
-  putValidator,
-  objectIdValidator,
-  handleExpressValidation,
-  updateActor,
-  sendErrors
-);
-
-v2.route("/:id")
+v1.route("/:id")
   .get(objectIdValidator, handleExpressValidation, getMyPersonalData, sendErrors)
   .put(
-    verifyUser(['MANAGER', 'EXPLORER', 'ADMIN']),
     putValidator,
     objectIdValidator,
     handleExpressValidation,
-    updateVerifiedActor,
+    updateActor,
     sendErrors
-  );
+);
 
 v1.route("/:id/ban").patch(
   objectIdValidator,
@@ -62,4 +52,43 @@ v1.route("/:id/unban").patch(
 );
 
 export const actorsV1 = v1;
+const v2 = express.Router();
+
+v2.route("/")
+  .get(verifyUser(['ADMIN']), getActors, sendErrors)
+  .post(
+    creationValidator,
+    handleExpressValidation,
+    createActor,
+    sendErrors
+  );
+  //post doesnt need to be controlled by verifyUser because it is for register. The controller will distinguish between roles.
+
+v2.route("/:id")
+  .get(objectIdValidator, handleExpressValidation, getMyPersonalData, sendErrors)
+  .put(
+    verifyUser(['MANAGER', 'EXPLORER', 'ADMIN', 'SPONSOR']),
+    putValidator,
+    objectIdValidator,
+    handleExpressValidation,
+    updateVerifiedActor,
+    sendErrors
+  );
+
+v2.route("/:id/ban").patch(
+  verifyUser(['ADMIN']),
+  objectIdValidator,
+  handleExpressValidation,
+  banActor,
+  sendErrors
+);
+
+v2.route("/:id/unban").patch(
+  verifyUser(['ADMIN']),
+  objectIdValidator,
+  handleExpressValidation,
+  unbanActor,
+  sendErrors
+);
+
 export const actorsV2 = v2;
