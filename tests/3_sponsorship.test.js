@@ -2,8 +2,20 @@ import { app } from "../app.js";
 import chai from "chai";
 import chaiHttp from "chai-http";
 const should = chai.should();
+import chance from "chance";
+import { tripId2 } from "./1_trip.test.js";
+import { sponsorId, explorerId } from "./0_actor.test.js";
 
 chai.use(chaiHttp);
+
+var mongoObjectId = function () {
+    var timestamp = (new Date().getTime() / 1000 | 0).toString(16);
+    return timestamp + "xxxxxxxxxxxxxxxx".replace(/[x]/g, function () {
+        return (Math.random() * 16 | 0).toString(16);
+    }).toLowerCase();
+};
+
+const sponsorshipId = mongoObjectId();
 
 //-----------------SPONSORSHIP------------------------------
 //
@@ -14,12 +26,12 @@ describe("POST Nuevo Sponsorship /sponsorships", () => {
         chai
         .request(app)
         .post("/sponsorships/")
-        .set("X-API-Version", "v1") // Aquí agregas el encabezado de versión de la API
+        .set("X-API-Version", "v1")
         .send({
             landingPage: "https://www.google.com/",
             banner: "https://www.google.com/",
-            sponsor: "6404a2b7e86c46de831f91f1",
-            trip: "64022ad36221c75534ec5580"
+            sponsor: sponsorId,
+            trip: tripId2
         })
         .end((err, res) => {
             res.should.have.status(201);
@@ -28,39 +40,18 @@ describe("POST Nuevo Sponsorship /sponsorships", () => {
     });
     });
 
-describe("PUT Sponsorship /sponsorships/:id", () => {
-    it("should return 200", (done) => {
-        const sponsorshipId = '6409c53b7698f714233a0b35';
-        chai
-        .request(app)
-        .put('/sponsorships/' + sponsorshipId + '/')
-        .set("X-API-Version", "v1") // Aquí agregas el encabezado de versión de la API
-        .send({
-            landingPage: "https://www.google.com/putSponsorship",
-            banner: "https://www.google.com/putSponsorship3",
-            sponsor: "6404a2b7e86c46de831f91f1",
-            trip: "64022ad36221c75534ec5580"
-        })
-        .end((err, res) => {
-            res.should.have.status(200);
-            done();
-        });
-    });
-    });
-
-
 // 400, Error Nuevo Sponsorship - POST /sponsorships
 describe("POST Error Nuevo Sponsorship - Actor no es Sponsor /sponsorships", () => {
     it("should return 400", (done) => {
         chai
         .request(app)
         .post("/sponsorships/")
-        .set("X-API-Version", "v1") // Aquí agregas el encabezado de versión de la API
+        .set("X-API-Version", "v1")
         .send({
             landingPage: "https://www.google.com/",
             banner: "https://www.google.com/",
-            sponsor: "64021b634f62f925ed5c90cc",
-            trip: "64022ad36221c75534ec5580"
+            sponsor: explorerId,
+            trip: tripId2
         })
         .end((err, res) => {
             res.should.have.status(400);

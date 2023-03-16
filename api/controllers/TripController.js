@@ -151,7 +151,6 @@ const searchTrips = async (req, res, next) => {
 
 const createTrip = async (req, res, next) => {
     try {
-        console.log(req.body);
         req.body.cancel = false;
         req.body.cancelReason = undefined;
         req.body.ticker = undefined;
