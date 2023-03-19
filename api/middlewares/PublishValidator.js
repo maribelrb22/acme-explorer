@@ -2,7 +2,7 @@
 import TripModel from '../models/TripModel.js';
 
 const publishOrDeleteValidator = async (req, res, next) => {
-    const trips = await TripModel.find({_id: req.params.tripId});
+    const trips = await TripModel.find({_id: req.params.id});
     if (!trips[0]?.published) {
         next()
     } else {

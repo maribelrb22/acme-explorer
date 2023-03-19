@@ -13,6 +13,9 @@ const BookingSchema = new mongoose.Schema({
         required: 'Enter the status of the booking',
         default: 'PENDING'
     },
+    paid: {
+        type: Date,
+    },
     comment: {
         type: String,
     },
@@ -30,6 +33,9 @@ const BookingSchema = new mongoose.Schema({
         required: 'Enter the explorer of the booking'
     },
 }, {strict: false});
+
+BookingSchema.index({explorer:1});
+BookingSchema.index({explorer:1, paid:1});
 
 const model = mongoose.model('Booking', BookingSchema);
 

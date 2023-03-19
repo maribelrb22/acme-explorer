@@ -5,6 +5,7 @@ import sendErrors from '../middlewares/ErrorHandlingMiddleware.js'
 
 const v1 = express.Router();
 
+//This endpoint is only for testing purposes
 v1.route('/')
     .post(populateDatabase, sendErrors);
 

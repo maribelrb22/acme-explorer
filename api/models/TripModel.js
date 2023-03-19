@@ -1,6 +1,7 @@
 'use strict';
 import mongoose from 'mongoose';
 import { schema as StagesSchema } from './StagesModel.js';
+import { schema as SponsorshipSchema } from './SponsorshipModel.js';
 import { customAlphabet } from 'nanoid';
 import dateFormat from 'dateformat';
 
@@ -43,6 +44,7 @@ const TripSchema = new mongoose.Schema({
         type: String,
     }],
     stages: [StagesSchema],
+    sponsorships: [SponsorshipSchema],
     manager: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Actor',
@@ -84,7 +86,9 @@ TripSchema.set('toJSON', {
 
 TripSchema.index({ ticker: 'text', title: 'text', description: 'text' });
 TripSchema.index({ startDate: 1 });
+TripSchema.index({ price: 1 });
 TripSchema.index({ manager: 1 });
+TripSchema.index({ published: 1, cancel: 1, startDate: 1 });
 
 const model = mongoose.model('Trip', TripSchema);
 

@@ -1,13 +1,49 @@
 'use strict'
 
+import mongoose from 'mongoose';
+
 import TripModel from '../models/TripModel.js';
 import BookingModel from '../models/BookingModel.js';
 import ActorModel from '../models/ActorModel.js';
+import FinderModel from '../models/FinderModel.js';
+import ConfigurationModel from '../models/ConfigurationModel.js';
 import { searchTrips as _searchTrips } from '../services/TripSearcherService.js';
+
 
 const listTrips = async (req, res, next) => {
     try {
-        const trips = await TripModel.find({});
+        let trips = await TripModel.aggregate([
+            {
+                $match: { published: true, cancel: false, startDate: { $gt: new Date() } }
+            },
+            {
+                $addFields: {
+                    sponsorships: {
+                      $let: {
+                        vars: {
+                          paidSponsorships: {
+                            $filter: {
+                              input: "$sponsorships",
+                              as: "sponsorship",
+                              cond: { $ne: ["$$sponsorship.paid", false] }
+                            }
+                          }
+                        },
+                        in: {
+                          $cond: {
+                            if: { $and: [{ $isArray: "$$paidSponsorships" }, { $gt: [{ $size: "$$paidSponsorships" }, 0] }] },
+                            then: { $arrayElemAt: ["$$paidSponsorships", { $floor: { $multiply: [{ $size: "$$paidSponsorships" }, Math.random()] } }] } ,
+                            else: null
+                          }
+                        }
+                      }
+                    },
+                    price: {
+                        $sum: "$stages.price"
+                    }
+                  }
+            }
+        ])    
         res.status(200).json(trips);
     } catch (err) {
         req.err = err;
@@ -16,10 +52,8 @@ const listTrips = async (req, res, next) => {
 }
 
 const getMyTrips = async (req, res, next) => {
-    //TODO: Get the user id from the token
-    const userId = await ActorModel.findOne({});
     try {
-        const trips = await TripModel.find({ manager: userId });
+        const trips = await TripModel.find({ manager: req.params.id });
         res.status(200).json(trips);
     } catch (err) {
         req.err = err;
@@ -29,12 +63,29 @@ const getMyTrips = async (req, res, next) => {
 
 const getTripById = async (req, res, next) => {
     try {
-        let trip = await TripModel.findOne({ _id: req.params.tripId });
+        let trip = await TripModel.aggregate([
+            {
+                $match: {
+                    _id: mongoose.Types.ObjectId(req.params.id)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'bookings',
+                    localField: '_id',
+                    foreignField: 'trip',
+                    as: 'bookings'
+                }
+            },
+            {
+                $addFields: {
+                    price: {
+                        $sum: "$stages.price"
+                    }
+                }
+            }
+        ]);
         if (trip) {
-            // Only add bookings if the user is the manager of the trip
-            const bookings = await BookingModel.find({ trip: req.params.tripId });
-            trip = trip.toObject();
-            trip.bookings = bookings;
             res.status(200).json(trip);
         }
         else {
@@ -46,20 +97,59 @@ const getTripById = async (req, res, next) => {
     }
 }
 
+function _compareFinders(l, r) {
+    return l.keyword === r.keyword &&
+        l.minPrice === r.minPrice &&
+        l.maxPrice === r.maxPrice &&
+        l.minDate?.toISOString().substring(0, 10) === r.minDate?.toISOString().substring(0, 10) &&
+        l.maxDate?.toISOString().substring(0, 10) === r.maxDate?.toISOString().substring(0, 10)
+}
+
 const searchTrips = async (req, res, next) => {
     try {
         // get finder cache time from configuration
-        const configuration = await ConfigurationModel.find()
-        const finderSearchLimit = configuration.finderSearchLimit
+        const configuration = await ConfigurationModel.findOne()
+        const finderCacheSeconds = configuration.finderCacheSeconds
 
-        const trips = await _searchTrips(
-            finderSearchLimit,
-            req.query.keyword,
-            parseFloat(req.query.minPrice),
-            parseFloat(req.query.maxPrice),
-            req.query.minDate,
-            req.query.maxDate)
-        res.status(200).json(trips);
+        // create finder with request params
+        const newFinder = {
+            _id: mongoose.Types.ObjectId(req.params.explorerId),
+            keyword: req.query.keyword,
+            minPrice: req.query.minPrice,
+            maxPrice: req.query.maxPrice,
+            minDate: req.query.minDate,
+            maxDate: req.query.maxDate,
+            expireAt: new Date(new Date().getTime() + finderCacheSeconds * 1000)
+        }
+
+        if(newFinder.minDate !== undefined && newFinder.maxDate !== undefined) {
+            if(newFinder.minDate > newFinder.maxDate) {
+                res.status(400).json({ message: 'Min date must be before max date' });
+            }
+        }
+
+        if (newFinder.minPrice !== undefined && newFinder.maxPrice !== undefined) {
+            if (newFinder.minPrice > newFinder.maxPrice) {
+                res.status(400).json({ message: 'Min price must be before max price' });
+            }
+        }
+
+        // find user finder
+        const oldFinder = await FinderModel.findOne({ _id: req.params.explorerId })
+        // check finder filters are equal to request filters
+        if (oldFinder !== null && _compareFinders(oldFinder, newFinder)) {
+            res.status(200).json(oldFinder.results)
+        } else {
+            // get filter results
+            newFinder.results = await _searchTrips(newFinder)
+            // insert new finder
+            if (req.params.explorerId) {
+                await FinderModel.findOneAndReplace({ _id: req.params.explorerId }, newFinder, { upsert: true })
+            }
+            
+            res.status(200).json(newFinder.results)
+            return
+        }
     } catch (err) {
         req.err = err;
         next()
@@ -72,6 +162,7 @@ const createTrip = async (req, res, next) => {
         req.body.cancelReason = undefined;
         req.body.ticker = undefined;
         req.body.published = false;
+        req.body.sponsorships = [];
 
         const startDate = new Date(req.body.startDate).getTime();
         const endDate = new Date(req.body.endDate).getTime();
@@ -91,7 +182,7 @@ const createTrip = async (req, res, next) => {
 
 const publishTrip = async (req, res, next) => {
     try {
-        const trip = await TripModel.findOneAndUpdate({_id: req.params.tripId}, { published: true }, { new: true });
+        const trip = await TripModel.findOneAndUpdate({_id: req.params.id}, { published: true }, { new: true });
         if (trip) {
             res.status(200).json(trip);
         } else {
@@ -99,7 +190,6 @@ const publishTrip = async (req, res, next) => {
         }
     } catch (err) {
         // check if the role is MANAGER
-        console.log(err);
         req.err = err;
         next()
     }
@@ -111,8 +201,9 @@ const updateTrip = async (req, res, next) => {
         req.body.cancelReason = undefined;
         req.body.ticker = undefined;
         req.body.published = false;
+        req.body.sponsorships = [];
 
-        const trips = await TripModel.find({_id: req.params.tripId})
+        const trips = await TripModel.find({_id: req.params.id})
         const trip = trips[0]
         if (trip) {
             const startDate = req.body.startDate ? req.body.startDate : Date(trip.startDate);
@@ -122,7 +213,7 @@ const updateTrip = async (req, res, next) => {
                 req.err.status = 400;
                 next();
             }
-            const tripResponse = await TripModel.findOneAndUpdate({_id: req.params.tripId}, req.body, { new: true });
+            const tripResponse = await TripModel.findOneAndUpdate({_id: req.params.id}, req.body, { new: true });
             res.status(200).json(tripResponse);
         } else {
             res.status(404).send("Trip not found")
@@ -136,16 +227,16 @@ const updateTrip = async (req, res, next) => {
 
 const cancelTrip = async (req, res, next) => {
     try {
-        const trips = await TripModel.find({_id: req.params.tripId});
+        const trips = await TripModel.find({_id: req.params.id});
         let trip = trips[0];
         if (trip) {
             const startDate = new Date(trip.startDate).getTime();
-
+            
             const bookings = await BookingModel.find({trip: trip._id});
             const acceptedBookings = bookings.filter(booking => booking.status === 'ACCEPTED');
 
             if (trip.published && startDate > Date.now() && acceptedBookings.length === 0) {
-                trip = await TripModel.findOneAndUpdate({_id: req.params.tripId}, { cancel: true, cancelReason: req.body.cancelReason }, { new: true });
+                trip = await TripModel.findOneAndUpdate({_id: req.params.id}, { cancel: true, cancelReason: req.body.cancelReason }, { new: true });
                 res.status(200).json(trip);
             } else {
                 res.status(409).json({message: 'The trip cannot be cancelled'});
@@ -162,10 +253,10 @@ const cancelTrip = async (req, res, next) => {
 
 const deleteTrip = async (req, res, next) => {
     try {
-        const trips = await TripModel.find({_id : req.params.tripId})
+        const trips = await TripModel.find({_id : req.params.id})
         const trip = trips[0]
         if (trip) {
-            await TripModel.findOneAndDelete({_id: req.params.tripId});
+            await TripModel.findOneAndDelete({_id: req.params.id});
             res.status(204).json(trip);
         } else {
             res.status(404).send("Trip not found")

@@ -3,10 +3,8 @@ import chance from "chance";
 import ActorModel from '../models/ActorModel.js'
 import TripModel from '../models/TripModel.js'
 import BookingModel from '../models/BookingModel.js'
-import SponsorshipModel from '../models/SponsorshipModel.js'
 import ConfigurationModel from '../models/ConfigurationModel.js'
 import FinderModel from '../models/FinderModel.js'
-import dateFormat from 'dateformat';
 import { customAlphabet } from 'nanoid';
 
 const sequenceTickerGenerator = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4);
@@ -37,39 +35,16 @@ const populateDatabase = async (req, res, next) => {
         next()
     }
 
-    // Generate 50 finders
-    const generateFinder = (explorerId) => {
-        return {
-            explorer: explorerId,
-            keyword: chanceGenerator.word(),
-            minPrice: chanceGenerator.floating({ min: 0, max: 50 }),
-            maxPrice: chanceGenerator.floating({ min: 51, max: 100 }),
-            minDate: chanceGenerator.date({ year: 2023 }),
-            maxDate: chanceGenerator.date({ year: 2024 })
-        }
-    }
-    const explorers = await ActorModel.aggregate([{ $match: { role: 'EXPLORER' } }, { $sample: { size: 20} }]);
-    const finders = [];
-    explorers.forEach(explorer => {
-        const explorerId = explorer._id.toString();
-        console.log(generateFinder(explorerId))
-        finders.push(generateFinder(explorerId));
-    });
-    try {
-        await FinderModel.insertMany(finders);
-    }
-    catch (err) {
-        req.err = err;
-        next()
-    }
-
     // Generate 100 trips
     const generateTrip = async () => {
         const randomManager = await ActorModel.aggregate([{ $match: { role: 'MANAGER' } }, { $sample: { size: 1 } }]);
         const managerId = randomManager[0]._id.toString();
 
+        const randomSponsor = await ActorModel.aggregate([{ $match: { role: 'SPONSOR' } }, { $sample: { size: 1 } }]);
+        const sponsorId = randomSponsor[0]._id.toString();
+
         return {
-          ticker: dateFormat(new Date(), "yymmdd") + '-' + sequenceTickerGenerator(),
+          ticker: '220101-' + sequenceTickerGenerator(),
           title: chanceGenerator.sentence({ words: 3 }),      
           description: chanceGenerator.paragraph({ sentences: 2 }),
           startDate: chanceGenerator.date({ year: 2023 }),
@@ -84,7 +59,13 @@ const populateDatabase = async (req, res, next) => {
                 price: chanceGenerator.floating({ min: 0, max: 1000, fixed: 2 })
           })),
           manager: managerId,
-          published: chanceGenerator.bool()
+          published: chanceGenerator.bool(),
+          sponsorships: Array(3).fill().map(() => ({
+                banner: chanceGenerator.url({ extensions: ['jpg', 'png'] }),
+                landingPage: chanceGenerator.url(),
+                paid: chanceGenerator.bool(),
+                sponsor: sponsorId
+            }))  
         }
     }
 
@@ -108,11 +89,14 @@ const populateDatabase = async (req, res, next) => {
         const randomTrip = await TripModel.aggregate([{ $sample: { size: 1 } }]);
         const tripId = randomTrip[0]._id.toString();
 
+        const status = chanceGenerator.pickone(['PENDING', 'REJECTED', 'DUE', 'ACCEPTED', 'CANCELLED']);
+
         return {
-            moment: chanceGenerator.date({ year: 2023 }),
-            status: chanceGenerator.pickone(['PENDING', 'REJECTED', 'DUE', 'ACCEPTED', 'CANCELLED']),
+            moment: chanceGenerator.date({ year: 2022, month: 0 }),
+            status: status,
             comments: chanceGenerator.sentence({ words: 10 }),
-            rejectReason: chanceGenerator.bool() ? chanceGenerator.sentence({ words: 10 }) : undefined,
+            rejectReason: status == 'REJECTED' ? chanceGenerator.sentence({ words: 10 }) : undefined,
+            paid: status == 'ACCEPTED' ? chanceGenerator.date({ year: 2022, month: 3 }) : status == 'CANCELLED' ? chanceGenerator.date({ year: 2022, month: 6 }) : undefined,
             explorer: explorerId,
             trip: tripId,
         }
@@ -138,37 +122,8 @@ const populateDatabase = async (req, res, next) => {
         if (bookings.length == 0 && trip.startDate > new Date()) {
             trip.cancel = true
             trip.cancelReason = chanceGenerator.sentence()
-            await trip.save()
+            await TripModel.updateOne({ _id: trip._id }, trip)
         }
-    }
-
-    // Generate 100 sponsorships
-    const generateSponsorships = async () => {
-        const randomSponsor = await ActorModel.aggregate([{ $match: { role: 'SPONSOR' } }, { $sample: { size: 1 } }]);
-        const sponsorId = randomSponsor[0]._id.toString()
-
-        const randomTrip = await TripModel.aggregate([{ $sample: { size: 1 } }]);
-        const tripId = randomTrip[0]._id.toString();
-
-        return {
-            landingPage: chanceGenerator.url(),
-            banner: chanceGenerator.url({ extensions: ['jpg', 'png'] }),
-            sponsor: sponsorId,
-            trip: tripId,
-            paid: chanceGenerator.bool()
-        }
-    }
-
-    const sponsorships = [];
-    for (let i = 0; i < 100; i++) {
-        sponsorships.push(await generateSponsorships());
-    }
-    try {
-        await SponsorshipModel.insertMany(sponsorships);
-    }
-    catch (err) {
-        req.err = err;
-        next()
     }
 
     // Generate a configuration

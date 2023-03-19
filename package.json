@@ -9,6 +9,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.16.4",
     "express-validator": "^6.14.3",
+    "firebase-admin": "^11.5.0",
     "memory-cache": "^0.2.0",
     "mongoose": "^6.8.4",
     "mongoose-to-swagger": "^1.4.0",
@@ -18,16 +19,21 @@
     "swagger-ui-express": "^4.6.0"
   },
   "devDependencies": {
+    "chai": "^4.3.7",
+    "chai-http": "^4.3.0",
     "eslint": "^8.32.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
+    "mocha": "^10.2.0",
     "nodemon": "^2.0.7"
   },
   "scripts": {
+    "test": "mocha ./tests/",
     "start": "nodemon --ignore ./example_api_client/ app.js",
     "docker_debug": "nodemon --ignore ./example_api_client/ --inspect=0.0.0.0:9229 app.js"
+    
   },
   "type": "module"
 }
