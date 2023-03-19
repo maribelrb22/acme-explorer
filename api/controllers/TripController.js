@@ -76,6 +76,13 @@ const getTripById = async (req, res, next) => {
                     foreignField: 'trip',
                     as: 'bookings'
                 }
+            },
+            {
+                $addFields: {
+                    price: {
+                        $sum: "$stages.price"
+                    }
+                }
             }
         ]);
         if (trip) {
